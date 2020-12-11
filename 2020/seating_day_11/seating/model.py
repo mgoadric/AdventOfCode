@@ -12,7 +12,7 @@ class ConwaysGameOfLife(Model):
     Game of Life.
     """
 
-    def __init__(self, data, height=10, width=10):
+    def __init__(self, data, height=10, width=10, part="Part 1"):
         """
         Create a new playing area of (height, width) cells.
         """
@@ -44,7 +44,7 @@ class ConwaysGameOfLife(Model):
                 state = Cell.FLOOR
             else:
                 state = Cell.DEAD
-            cell = Cell((x, y), self, state)
+            cell = Cell((x, y), self, state, part)
            
             self.grid.place_agent(cell, (x, y))
             self.schedule.add(cell)
@@ -60,7 +60,7 @@ class ConwaysGameOfLife(Model):
         print(self.numalive)
         prev = self.numalive
         self.schedule.step()
-        #self.schedule.step()
+        self.schedule.step()
         self.dc.collect(self)
 
         self.numalive = self.count_type(self, Cell.ALIVE)

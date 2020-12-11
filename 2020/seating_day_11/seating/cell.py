@@ -8,7 +8,7 @@ class Cell(Agent):
     ALIVE = 1
     FLOOR = 2
 
-    def __init__(self, pos, model, init_state=DEAD):
+    def __init__(self, pos, model, init_state=DEAD, part="Part 1"):
         """
         Create a cell, in the given state, at the given x, y position.
         """
@@ -16,6 +16,7 @@ class Cell(Agent):
         self.x, self.y = pos
         self.state = init_state
         self._nextState = None
+        self.part = part
 
     @property
     def isAlive(self):
@@ -30,7 +31,10 @@ class Cell(Agent):
         return self.model.grid.neighbor_iter((self.x, self.y), True)
 
     def step(self):
-        self.step1()
+        if self.part == "Part 1":
+            self.step1()
+        else:
+            self.step2()
     
     def step1(self):
         """
