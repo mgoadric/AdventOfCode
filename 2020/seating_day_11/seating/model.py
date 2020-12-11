@@ -1,5 +1,6 @@
 from mesa import Model
 from mesa.time import SimultaneousActivation
+from mesa.datacollection import DataCollector
 from mesa.space import Grid
 
 from .cell import Cell
@@ -27,6 +28,13 @@ class ConwaysGameOfLife(Model):
         # Use a simple grid, where edges wrap around.
         self.grid = Grid(height, width, torus=False)
 
+        self.dc = DataCollector(
+            {
+                "Empty": lambda m: self.count_type(m, Cell.DEAD),
+                "Occupied": lambda m: self.count_type(m, Cell.ALIVE),
+            }
+        )
+
         self.numalive = 0
         
         # Place a cell at each location, with some initialized to
@@ -42,6 +50,8 @@ class ConwaysGameOfLife(Model):
             self.schedule.add(cell)
 
         self.running = True
+        self.dc.collect(self)
+
 
     def step(self):
         """
@@ -50,6 +60,9 @@ class ConwaysGameOfLife(Model):
         print(self.numalive)
         prev = self.numalive
         self.schedule.step()
+        #self.schedule.step()
+        self.dc.collect(self)
+
         self.numalive = self.count_type(self, Cell.ALIVE)
         if prev == self.numalive:
             self.running = False

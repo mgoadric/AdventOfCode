@@ -17,8 +17,10 @@ def portrayCell(cell):
     }
     if cell.isAlive:
         p["Color"] = "red"
+        p["Shape"] = "circle"
+        p["r"] = 1
     elif cell.isDead:
-        p["Color"] = "green"
+        p["Color"] = "white"
     else:
         p["Color"] = "black"
     return p

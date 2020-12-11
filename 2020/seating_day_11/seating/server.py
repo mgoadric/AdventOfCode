@@ -1,5 +1,6 @@
 from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.ModularVisualization import ModularServer
+from mesa.visualization.modules import ChartModule
 
 from .portrayal import portrayCell
 from .model import ConwaysGameOfLife
@@ -10,8 +11,14 @@ fin.close()
 
 
 # Make a world that is 50x50, on a 250x250 display.
-canvas_element = CanvasGrid(portrayCell, len(data[0].strip()), len(data), 5 * len(data[0].strip()), 5 * len(data))
+scale = 600 // len(data)
+canvas_element = CanvasGrid(portrayCell, len(data[0].strip()), len(data), scale * len(data[0].strip()), scale * len(data))
+
+chart = ChartModule([{"Label": "Occupied",
+                      "Color": "Red"}, {"Label": "Empty",
+                      "Color": "Green"}],
+                    data_collector_name='dc')
 
 server = ModularServer(
-    ConwaysGameOfLife, [canvas_element], "Game of Life", {"height": len(data[0].strip()), "width": len(data), "data": data}
+    ConwaysGameOfLife, [canvas_element, chart], "Advent of Code 2020 Day 11 Ferry Seating", {"height": len(data[0].strip()), "width": len(data), "data": data}
 )

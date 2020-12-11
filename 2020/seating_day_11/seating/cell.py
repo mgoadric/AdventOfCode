@@ -29,6 +29,9 @@ class Cell(Agent):
     def neighbors(self):
         return self.model.grid.neighbor_iter((self.x, self.y), True)
 
+    def step(self):
+        self.step1()
+    
     def step1(self):
         """
         Compute if the cell will be dead or alive at the next tick.  This is
@@ -51,7 +54,7 @@ class Cell(Agent):
             if live_neighbors == 0:
                 self._nextState = self.ALIVE
 
-    def step(self):
+    def step2(self):
         """
         Compute if the cell will be dead or alive at the next tick.  This is
         based on the number of alive or dead neighbors.  The state is not
