@@ -1,0 +1,15 @@
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/bin/Debug/net5.0/AoCSharp.deps.json
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/bin/Debug/net5.0/AoCSharp.runtimeconfig.json
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/bin/Debug/net5.0/AoCSharp.runtimeconfig.dev.json
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/bin/Debug/net5.0/AoCSharp.dll
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/bin/Debug/net5.0/ref/AoCSharp.dll
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/bin/Debug/net5.0/AoCSharp.pdb
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/obj/Debug/net5.0/AoCSharp.csproj.AssemblyReference.cache
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/obj/Debug/net5.0/AoCSharp.GeneratedMSBuildEditorConfig.editorconfig
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/obj/Debug/net5.0/AoCSharp.AssemblyInfoInputs.cache
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/obj/Debug/net5.0/AoCSharp.AssemblyInfo.cs
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/obj/Debug/net5.0/AoCSharp.csproj.CoreCompileInputs.cache
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/obj/Debug/net5.0/AoCSharp.dll
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/obj/Debug/net5.0/ref/AoCSharp.dll
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/obj/Debug/net5.0/AoCSharp.pdb
+/Users/goadrich/Github/AdventOfCode/2021/AoCSharp/AoCSharp/obj/Debug/net5.0/AoCSharp.genruntimeconfig.cache
