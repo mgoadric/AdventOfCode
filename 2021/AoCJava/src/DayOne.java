@@ -11,7 +11,7 @@ public class DayOne {
 
         try {
             BufferedReader br = new BufferedReader(
-                    new FileReader("input1.txt"));
+                    new FileReader("../data/input1.txt"));
             String line = br.readLine();
             int[] window = new int[3];
             boolean full = false;
