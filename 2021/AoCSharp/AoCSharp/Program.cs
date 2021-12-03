@@ -20,6 +20,7 @@ namespace AoCSharp
             Puzzle[,] puzzles = new Puzzle[,]{
                 { day1part1, day1part2 },
                 { day2part1, day2part2 },
+                { day3part1, day3part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -124,7 +125,49 @@ namespace AoCSharp
 
         static int day3part1(IEnumerable<string> input)
         {
-            return 0;
+            int gamma = 0;
+            int epsilon = 0;
+            int[] counts = new int[input.First().Length];
+            foreach (string line in input)
+            {
+                char[] bits = line.ToCharArray();
+                for (int i = 0; i < bits.Length; i++)
+                {
+                    int val = Int32.Parse("" + bits[i]);
+                    if (val == 1)
+                    {
+                        counts[i]++;
+                    } else
+                    {
+                        counts[i]--;
+                    }
+                }
+            }
+
+            string gammaStr = "";
+            string epsStr = "";
+            for (int i = 0; i < counts.Length; i++)
+            {
+                if (counts[i] > 0)
+                {
+                    gamma = (gamma << 1) + 1;
+                    epsilon = epsilon << 1;
+
+                    gammaStr += "1";
+                    epsStr += "0";
+                } else
+                {
+
+                    gamma = gamma << 1;
+                    epsilon = (epsilon << 1) + 1;
+
+                    gammaStr += "0";
+                    epsStr += "1";
+                }
+            }
+
+            Console.WriteLine(gammaStr + ", " + epsStr);
+            return gamma * epsilon;
         }
 
         static int day3part2(IEnumerable<string> input)
