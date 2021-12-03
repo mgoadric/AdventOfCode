@@ -172,7 +172,18 @@ namespace AoCSharp
 
         static int day3part2(IEnumerable<string> input)
         {
-            return 0;
+            BCNode root = new BCNode('0', input.First().Length + 1);
+            foreach (string line in input)
+            {
+                root.insert(line);
+            }
+            Console.WriteLine(root.o2string());
+            Console.WriteLine(root.o2());
+
+            Console.WriteLine(root.co2string());
+            Console.WriteLine(root.co2());
+
+            return root.o2() * root.co2();
         }
     }
 }
