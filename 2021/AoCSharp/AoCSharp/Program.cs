@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AoCSharp
 {
@@ -34,6 +35,8 @@ namespace AoCSharp
                                   puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}.txt", day))));
                 }
             }
+
+            day3part2Viz(File.ReadLines(path + "input3sample.txt"));
         }
 
         static int day1part1(IEnumerable<string> input)
@@ -177,13 +180,28 @@ namespace AoCSharp
             {
                 root.insert(line);
             }
-            Console.WriteLine(root.o2string());
-            Console.WriteLine(root.o2());
 
+            Console.WriteLine(root.o2string());
             Console.WriteLine(root.co2string());
-            Console.WriteLine(root.co2());
+
+            Console.WriteLine("digraph {\n" + root + "}\n");
 
             return root.o2() * root.co2();
+        }
+
+        static void day3part2Viz(IEnumerable<string> input)
+        {
+            BCNode root = new BCNode('0', input.First().Length + 1);
+            int frame = 0;
+            foreach (string line in input)
+            {
+                root.insert(line);
+                File.WriteAllText("bntree" + frame + ".dot", "digraph {\n" +
+                "\n" + root.toDot(Path.NONE) + "}\n");
+                frame++;
+            }
+            File.WriteAllText("bntree" + frame + ".dot", "digraph {\n" +
+                "\n" + root.toDot(Path.BOTH) + "}\n");
         }
     }
 }
