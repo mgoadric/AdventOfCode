@@ -232,7 +232,7 @@ namespace AoCSharp
                 foreach (BingoBoard bb in boards)
                 {
                     int bingo = bb.mark(c);
-                    if (bingo != -1)
+                    if (bingo > -1)
                     {
                         return bingo;
                     }
@@ -243,6 +243,46 @@ namespace AoCSharp
 
         static int day4part2(IEnumerable<string> input)
         {
+            int[] calls = input.First().Split(",").Select(s => Int32.Parse(s)).ToArray();
+
+            List<BingoBoard> boards = new List<BingoBoard>();
+
+            int numBoards = (input.Count() - 1) / 6;
+            Console.WriteLine((input.Count() - 1) % 6);
+            String[] input2 = input.ToArray();
+            for (int i = 0; i < numBoards; i++)
+            {
+                string members = "";
+                for (int j = 0; j < 5; j++)
+                {
+                    members += input2[1 + (6 * i) + j + 1] + " ";
+                }
+                Console.WriteLine(members.Replace("  ", " ").Trim());
+                int[] nums = members.Replace("  ", " ").Trim().Split(" ").Select(s => Int32.Parse(s)).ToArray();
+                boards.Add(new BingoBoard(nums));
+            }
+
+            int won = numBoards;
+            bool[] whoWon = new bool[numBoards];
+            foreach (int c in calls)
+            {
+                Console.WriteLine(c);
+                int i = 0;
+                foreach (BingoBoard bb in boards)
+                {
+                    int bingo = bb.mark(c);
+                    if (!whoWon[i] && bingo != -1)
+                    {
+                        won--;
+                        whoWon[i] = true;
+                        if (won == 0)
+                        {
+                            return bingo;
+                        }
+                    }
+                    i++;
+                }
+            }
             return 0;
         }
     }

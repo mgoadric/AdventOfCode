@@ -8,6 +8,7 @@ namespace AoCSharp
     {
         private int[] marked = new int[10];
         private Dictionary<int, Tuple<int, int>> numbers = new Dictionary<int, Tuple<int, int>>();
+        private int bingo = -1;
 
         public BingoBoard(int[] members)
         {
@@ -31,19 +32,19 @@ namespace AoCSharp
 
         public int mark(int num)
         {
-            if (numbers.ContainsKey(num))
+            if (bingo == -1 && numbers.ContainsKey(num))
             {
                 Tuple<int, int> value = numbers[num];
                 marked[value.Item1]++;
                 marked[5 + value.Item2]++;
                 numbers.Remove(num);
-                if (marked[value.Item1] == 5 || marked[value.Item2] == 5)
+                if (marked[value.Item1] == 5 || marked[5 + value.Item2] == 5)
                 {
                     Console.WriteLine("" + num + "*(" + string.Join('+', numbers.Keys.ToArray()) + ")");
-                    return num * numbers.Keys.Sum();
+                    bingo = num * numbers.Keys.Sum();
                 }
             }
-            return -1;
+            return bingo;
         }
     }
 }
