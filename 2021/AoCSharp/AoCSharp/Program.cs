@@ -22,6 +22,7 @@ namespace AoCSharp
                 { day1part1, day1part2 },
                 { day2part1, day2part2 },
                 { day3part1, day3part2 },
+                { day4part1, day4part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -36,7 +37,7 @@ namespace AoCSharp
                 }
             }
 
-            day3part2Viz(File.ReadLines(path + "input3sample.txt"));
+            //day3part2Viz(File.ReadLines(path + "input3sample.txt"));
         }
 
         static int day1part1(IEnumerable<string> input)
@@ -140,7 +141,8 @@ namespace AoCSharp
                     if (val == 1)
                     {
                         counts[i]++;
-                    } else
+                    }
+                    else
                     {
                         counts[i]--;
                     }
@@ -158,7 +160,8 @@ namespace AoCSharp
 
                     gammaStr += "1";
                     epsStr += "0";
-                } else
+                }
+                else
                 {
 
                     gamma = gamma << 1;
@@ -184,8 +187,6 @@ namespace AoCSharp
             Console.WriteLine(root.o2string());
             Console.WriteLine(root.co2string());
 
-            Console.WriteLine("digraph {\n" + root + "}\n");
-
             return root.o2() * root.co2();
         }
 
@@ -202,6 +203,47 @@ namespace AoCSharp
             }
             File.WriteAllText("bntree" + frame + ".dot", "digraph {\n" +
                 "\n" + root.toDot(Path.BOTH) + "}\n");
+        }
+
+        static int day4part1(IEnumerable<string> input)
+        {
+            int[] calls = input.First().Split(",").Select(s => Int32.Parse(s)).ToArray();
+
+            List<BingoBoard> boards = new List<BingoBoard>();
+
+            int numBoards = (input.Count() - 1) / 6;
+            Console.WriteLine((input.Count() - 1) % 6);
+            String[] input2 = input.ToArray();
+            for (int i = 0; i < numBoards; i++)
+            {
+                string members = "";
+                for (int j = 0; j < 5; j++)
+                {
+                    members += input2[1 + (6 * i) + j + 1] + " ";
+                }
+                Console.WriteLine(members.Replace("  ", " ").Trim());
+                int[] nums = members.Replace("  ", " ").Trim().Split(" ").Select(s => Int32.Parse(s)).ToArray();
+                boards.Add(new BingoBoard(nums));
+            }
+
+            foreach (int c in calls)
+            {
+                Console.WriteLine(c);
+                foreach (BingoBoard bb in boards)
+                {
+                    int bingo = bb.mark(c);
+                    if (bingo != -1)
+                    {
+                        return bingo;
+                    }
+                }
+            }
+            return 0;
+        }
+
+        static int day4part2(IEnumerable<string> input)
+        {
+            return 0;
         }
     }
 }
