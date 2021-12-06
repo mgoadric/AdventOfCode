@@ -40,7 +40,7 @@ namespace AoCSharp
                 numbers.Remove(num);
                 if (marked[value.Item1] == 5 || marked[5 + value.Item2] == 5)
                 {
-                    Console.WriteLine("" + num + "*(" + string.Join('+', numbers.Keys.ToArray()) + ")");
+                    //Console.WriteLine("" + num + "*(" + string.Join('+', numbers.Keys.ToArray()) + ")");
                     bingo = num * numbers.Keys.Sum();
                 }
             }

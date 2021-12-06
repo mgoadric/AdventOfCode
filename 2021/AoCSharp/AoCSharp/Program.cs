@@ -23,6 +23,7 @@ namespace AoCSharp
                 { day2part1, day2part2 },
                 { day3part1, day3part2 },
                 { day4part1, day4part2 },
+                { day5part1, day5part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -212,7 +213,7 @@ namespace AoCSharp
             List<BingoBoard> boards = new List<BingoBoard>();
 
             int numBoards = (input.Count() - 1) / 6;
-            Console.WriteLine((input.Count() - 1) % 6);
+            //Console.WriteLine((input.Count() - 1) % 6);
             String[] input2 = input.ToArray();
             for (int i = 0; i < numBoards; i++)
             {
@@ -221,14 +222,14 @@ namespace AoCSharp
                 {
                     members += input2[1 + (6 * i) + j + 1] + " ";
                 }
-                Console.WriteLine(members.Replace("  ", " ").Trim());
+                //Console.WriteLine(members.Replace("  ", " ").Trim());
                 int[] nums = members.Replace("  ", " ").Trim().Split(" ").Select(s => Int32.Parse(s)).ToArray();
                 boards.Add(new BingoBoard(nums));
             }
 
             foreach (int c in calls)
             {
-                Console.WriteLine(c);
+                //Console.WriteLine(c);
                 foreach (BingoBoard bb in boards)
                 {
                     int bingo = bb.mark(c);
@@ -238,7 +239,7 @@ namespace AoCSharp
                     }
                 }
             }
-            return 0;
+            return -1;
         }
 
         static int day4part2(IEnumerable<string> input)
@@ -248,7 +249,7 @@ namespace AoCSharp
             List<BingoBoard> boards = new List<BingoBoard>();
 
             int numBoards = (input.Count() - 1) / 6;
-            Console.WriteLine((input.Count() - 1) % 6);
+            //Console.WriteLine((input.Count() - 1) % 6);
             String[] input2 = input.ToArray();
             for (int i = 0; i < numBoards; i++)
             {
@@ -257,7 +258,7 @@ namespace AoCSharp
                 {
                     members += input2[1 + (6 * i) + j + 1] + " ";
                 }
-                Console.WriteLine(members.Replace("  ", " ").Trim());
+                //Console.WriteLine(members.Replace("  ", " ").Trim());
                 int[] nums = members.Replace("  ", " ").Trim().Split(" ").Select(s => Int32.Parse(s)).ToArray();
                 boards.Add(new BingoBoard(nums));
             }
@@ -266,7 +267,7 @@ namespace AoCSharp
             bool[] whoWon = new bool[numBoards];
             foreach (int c in calls)
             {
-                Console.WriteLine(c);
+                //Console.WriteLine(c);
                 int i = 0;
                 foreach (BingoBoard bb in boards)
                 {
@@ -283,7 +284,122 @@ namespace AoCSharp
                     i++;
                 }
             }
-            return 0;
+            return -1;
+        }
+
+        static int day5part1(IEnumerable<string> input)
+        {
+            Dictionary<Tuple<int, int>, int> points = new Dictionary<Tuple<int, int>, int>();
+            foreach (string line in input)
+            {
+                int[] coords = string.Join(',', line.Split(" -> ")).Split(",").Select(s => Int32.Parse(s)).ToArray();
+                if (coords[0] == coords[2])
+                {
+                    int min = Math.Min(coords[1], coords[3]);
+                    int max = Math.Max(coords[1], coords[3]);
+                    for (int j = min; j <= max; j++)
+                    {
+                        Tuple<int, int> t = new Tuple<int, int>(coords[0], j);
+                        if (!points.ContainsKey(t))
+                        {
+                            points[t] = 0;
+                        }
+                        points[t]+= 1;
+                    }
+                }
+                else if (coords[1] == coords[3])
+                {
+                    int min = Math.Min(coords[0], coords[2]);
+                    int max = Math.Max(coords[0], coords[2]);
+                    for (int i = min; i <= max; i++)
+                    {
+                        Tuple<int, int> t = new Tuple<int, int>(i, coords[1]);
+                        if (!points.ContainsKey(t))
+                        {
+                            points[t] = 0;
+                        }
+                        points[t] += 1;
+                    }
+                } 
+            }
+            int overlap = 0;
+            foreach (Tuple<int, int> t in points.Keys)
+            {
+                if (points[t] > 1)
+                {
+                    overlap++;
+                }
+            }
+            return overlap;
+        }
+
+        static int day5part2(IEnumerable<string> input)
+        {
+            Dictionary<Tuple<int, int>, int> points = new Dictionary<Tuple<int, int>, int>();
+            foreach (string line in input)
+            {
+                int[] coords = string.Join(',', line.Split(" -> ")).Split(",").Select(s => Int32.Parse(s)).ToArray();
+                if (coords[0] == coords[2])
+                {
+                    int min = Math.Min(coords[1], coords[3]);
+                    int max = Math.Max(coords[1], coords[3]);
+                    for (int j = min; j <= max; j++)
+                    {
+                        Tuple<int, int> t = new Tuple<int, int>(coords[0], j);
+                        if (!points.ContainsKey(t))
+                        {
+                            points[t] = 0;
+                        }
+                        points[t] += 1;
+                    }
+                }
+                else if (coords[1] == coords[3])
+                {
+                    int min = Math.Min(coords[0], coords[2]);
+                    int max = Math.Max(coords[0], coords[2]);
+                    for (int i = min; i <= max; i++)
+                    {
+                        Tuple<int, int> t = new Tuple<int, int>(i, coords[1]);
+                        if (!points.ContainsKey(t))
+                        {
+                            points[t] = 0;
+                        }
+                        points[t] += 1;
+                    }
+                }
+                else
+                {
+                    Tuple<int, int> t1 = new Tuple<int, int>(coords[0], coords[1]);
+                    Tuple<int, int> t2 = new Tuple<int, int>(coords[2], coords[3]);
+                    //Console.WriteLine("T2:" + t2);
+                    do
+                    {
+                        //Console.WriteLine("T1: " + t1);
+                        if (!points.ContainsKey(t1))
+                        {
+                            points[t1] = 0;
+                        }
+                        points[t1] += 1;
+                        int xdir = Math.Sign(t2.Item1 - t1.Item1);
+                        int ydir = Math.Sign(t2.Item2 - t1.Item2);
+                        t1 = new Tuple<int, int>(t1.Item1 + xdir, t1.Item2 + ydir);
+                    } while (t1.Item1 != t2.Item1 || t1.Item2 != t2.Item2);
+                    if (!points.ContainsKey(t1))
+                    {
+                        points[t1] = 0;
+                    }
+                    points[t1] += 1;
+                }
+            }
+            int overlap = 0;
+            foreach (Tuple<int, int> t in points.Keys)
+            {
+                if (points[t] > 1)
+                {
+                    overlap++;
+                }
+            }
+            return overlap;
         }
     }
 }
