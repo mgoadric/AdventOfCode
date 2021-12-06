@@ -339,57 +339,28 @@ namespace AoCSharp
             foreach (string line in input)
             {
                 int[] coords = string.Join(',', line.Split(" -> ")).Split(",").Select(s => Int32.Parse(s)).ToArray();
-                if (coords[0] == coords[2])
+
+                Tuple<int, int> t1 = new Tuple<int, int>(coords[0], coords[1]);
+                Tuple<int, int> t2 = new Tuple<int, int>(coords[2], coords[3]);
+                //Console.WriteLine("T2:" + t2);
+                do
                 {
-                    int min = Math.Min(coords[1], coords[3]);
-                    int max = Math.Max(coords[1], coords[3]);
-                    for (int j = min; j <= max; j++)
-                    {
-                        Tuple<int, int> t = new Tuple<int, int>(coords[0], j);
-                        if (!points.ContainsKey(t))
-                        {
-                            points[t] = 0;
-                        }
-                        points[t] += 1;
-                    }
-                }
-                else if (coords[1] == coords[3])
-                {
-                    int min = Math.Min(coords[0], coords[2]);
-                    int max = Math.Max(coords[0], coords[2]);
-                    for (int i = min; i <= max; i++)
-                    {
-                        Tuple<int, int> t = new Tuple<int, int>(i, coords[1]);
-                        if (!points.ContainsKey(t))
-                        {
-                            points[t] = 0;
-                        }
-                        points[t] += 1;
-                    }
-                }
-                else
-                {
-                    Tuple<int, int> t1 = new Tuple<int, int>(coords[0], coords[1]);
-                    Tuple<int, int> t2 = new Tuple<int, int>(coords[2], coords[3]);
-                    //Console.WriteLine("T2:" + t2);
-                    do
-                    {
-                        //Console.WriteLine("T1: " + t1);
-                        if (!points.ContainsKey(t1))
-                        {
-                            points[t1] = 0;
-                        }
-                        points[t1] += 1;
-                        int xdir = Math.Sign(t2.Item1 - t1.Item1);
-                        int ydir = Math.Sign(t2.Item2 - t1.Item2);
-                        t1 = new Tuple<int, int>(t1.Item1 + xdir, t1.Item2 + ydir);
-                    } while (t1.Item1 != t2.Item1 || t1.Item2 != t2.Item2);
+                    //Console.WriteLine("T1: " + t1);
                     if (!points.ContainsKey(t1))
                     {
                         points[t1] = 0;
                     }
                     points[t1] += 1;
+                    int xdir = Math.Sign(t2.Item1 - t1.Item1);
+                    int ydir = Math.Sign(t2.Item2 - t1.Item2);
+                    t1 = new Tuple<int, int>(t1.Item1 + xdir, t1.Item2 + ydir);
+                } while (t1.Item1 != t2.Item1 || t1.Item2 != t2.Item2);
+                if (!points.ContainsKey(t1))
+                {
+                    points[t1] = 0;
                 }
+                points[t1] += 1;
+                
             }
             int overlap = 0;
             foreach (Tuple<int, int> t in points.Keys)
