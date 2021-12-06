@@ -24,6 +24,7 @@ namespace AoCSharp
                 { day3part1, day3part2 },
                 { day4part1, day4part2 },
                 { day5part1, day5part2 },
+                { day6part1, day6part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -371,6 +372,70 @@ namespace AoCSharp
                 }
             }
             return overlap;
+        }
+
+        static int day6part1(IEnumerable<string> input)
+        {
+            int[] fish = input.First().Split(",").Select(s => Int32.Parse(s)).ToArray();
+
+            int[] starting = new int[7];
+            foreach(int f in fish)
+            {
+                starting[f]++;
+            }
+
+            Queue<int> days = new Queue<int>();
+            foreach (int fp in starting)
+            {
+                days.Enqueue(fp);
+            }
+
+            Queue<int> babies = new Queue<int>();
+            babies.Enqueue(0);
+            babies.Enqueue(0);
+
+
+            for (int i = 0; i < 80; i++)
+            {
+                int repos = days.Dequeue();
+                days.Enqueue(repos + babies.Dequeue());
+                babies.Enqueue(repos);
+            }
+
+            return days.Sum() + babies.Sum();
+        }
+
+        static int day6part2(IEnumerable<string> input)
+        {
+            int[] fish = input.First().Split(",").Select(s => Int32.Parse(s)).ToArray();
+
+            int[] starting = new int[7];
+            foreach (int f in fish)
+            {
+                starting[f]++;
+            }
+
+            Queue<long> days = new Queue<long>();
+            foreach (int fp in starting)
+            {
+                days.Enqueue(fp);
+            }
+
+            Queue<long> babies = new Queue<long>();
+            babies.Enqueue(0);
+            babies.Enqueue(0);
+
+
+            for (int i = 0; i < 256; i++)
+            {
+                long repos = days.Dequeue();
+                days.Enqueue(repos + babies.Dequeue());
+                babies.Enqueue(repos);
+            }
+
+            Console.WriteLine(days.Sum() + babies.Sum());
+            return -1;
+
         }
     }
 }
