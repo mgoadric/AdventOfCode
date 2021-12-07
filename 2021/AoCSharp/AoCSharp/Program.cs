@@ -25,6 +25,7 @@ namespace AoCSharp
                 { day4part1, day4part2 },
                 { day5part1, day5part2 },
                 { day6part1, day6part2 },
+                { day7part1, day7part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -436,6 +437,51 @@ namespace AoCSharp
             Console.WriteLine(days.Sum() + babies.Sum());
             return -1;
 
+        }
+
+        static int day7part1(IEnumerable<string> input)
+        {
+            int[] crabs = input.First().Split(",").Select(s => Int32.Parse(s)).ToArray();
+            int besti = -1;
+            int bestv = Int32.MaxValue;
+            for (int i = crabs.Min(); i <= crabs.Max(); i++)
+            {
+                int fuel = 0;
+                foreach (int c in crabs)
+                {
+                    fuel += Math.Abs(c - i);
+                }
+                if (fuel < bestv)
+                {
+                    bestv = fuel;
+                    besti = i;
+                }
+            }
+
+            return bestv;
+        }
+
+        static int day7part2(IEnumerable<string> input)
+        {
+            int[] crabs = input.First().Split(",").Select(s => Int32.Parse(s)).ToArray();
+            int besti = -1;
+            int bestv = Int32.MaxValue;
+            for (int i = crabs.Min(); i <= crabs.Max(); i++)
+            {
+                int fuel = 0;
+                foreach (int c in crabs)
+                {
+                    int n = Math.Abs(c - i);
+                    fuel += ((n + 1) * n) / 2;
+                }
+                if (fuel < bestv)
+                {
+                    bestv = fuel;
+                    besti = i;
+                }
+            }
+
+            return bestv;
         }
     }
 }
