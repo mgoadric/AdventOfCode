@@ -26,6 +26,7 @@ namespace AoCSharp
                 { day5part1, day5part2 },
                 { day6part1, day6part2 },
                 { day7part1, day7part2 },
+                { day8part1, day8part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -306,7 +307,7 @@ namespace AoCSharp
                         {
                             points[t] = 0;
                         }
-                        points[t]+= 1;
+                        points[t] += 1;
                     }
                 }
                 else if (coords[1] == coords[3])
@@ -322,7 +323,7 @@ namespace AoCSharp
                         }
                         points[t] += 1;
                     }
-                } 
+                }
             }
             int overlap = 0;
             foreach (Tuple<int, int> t in points.Keys)
@@ -362,7 +363,7 @@ namespace AoCSharp
                     points[t1] = 0;
                 }
                 points[t1] += 1;
-                
+
             }
             int overlap = 0;
             foreach (Tuple<int, int> t in points.Keys)
@@ -380,7 +381,7 @@ namespace AoCSharp
             int[] fish = input.First().Split(",").Select(s => Int32.Parse(s)).ToArray();
 
             int[] starting = new int[7];
-            foreach(int f in fish)
+            foreach (int f in fish)
             {
                 starting[f]++;
             }
@@ -482,6 +483,62 @@ namespace AoCSharp
             }
 
             return bestv;
+        }
+
+        static int day8part1(IEnumerable<string> input)
+        {
+            Dictionary<int, HashSet<char>> digits = new Dictionary<int, HashSet<char>>()
+            {
+                {0, new HashSet<char>{'a', 'b', 'c',      'e', 'f', 'g'} },
+                {1, new HashSet<char>{          'c',      'e',         } },
+                {2, new HashSet<char>{'a',      'c', 'd', 'e',      'g'} },
+                {3, new HashSet<char>{'a',      'c', 'd',      'f', 'g'} },
+                {4, new HashSet<char>{     'b', 'c', 'd',      'f',    } },
+                {5, new HashSet<char>{'a', 'b',      'd',      'f', 'g'} },
+                {6, new HashSet<char>{'a', 'b',      'd', 'e', 'f', 'g'} },
+                {7, new HashSet<char>{'a',      'c',           'f',    } },
+                {8, new HashSet<char>{'a', 'b', 'c', 'd', 'e', 'f', 'g'} },
+                {9, new HashSet<char>{'a', 'b', 'c', 'd',      'f', 'g'} },
+            };
+
+            int count = 0;
+            foreach (string line in input)
+            {
+                Dictionary<char, HashSet<char>> maping = new Dictionary<char, HashSet<char>>();
+                foreach (char c in "abcdefg")
+                {
+                    maping[c] = new HashSet<char> {'a', 'b', 'c', 'd', 'e', 'f', 'g'};
+                }
+
+                string[][] patterns = line.Split(" | ").Select(s => s.Split(" ")).ToArray();
+                HashSet<int>[] potential = new HashSet<int>[patterns[1].Length];
+
+                for (int i = 0; i < patterns[1].Length; i++) {
+                    potential[i] = new HashSet<int>();
+
+                    for (int j = 0; j < 10; j++)
+                    {
+                        if (digits[j].Count() == patterns[1][i].Length)
+                        {
+                            potential[i].Add(j);
+                            //Console.WriteLine(patterns[1][i] + " -> " + j);
+                        }
+                    }
+
+                    if (potential[i].Count() == 1)
+                    {
+                        count++;
+                        //Console.WriteLine(patterns[1][i] + " -> " + potential[i]);
+                    }
+                }
+
+            }
+            return count;
+        }
+
+        static int day8part2(IEnumerable<string> input)
+        {
+            return -1;
         }
     }
 }
