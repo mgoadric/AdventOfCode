@@ -538,7 +538,155 @@ namespace AoCSharp
 
         static int day8part2(IEnumerable<string> input)
         {
-            return -1;
+            Dictionary<int, HashSet<char>> digits = new Dictionary<int, HashSet<char>>()
+            {
+                {1, new HashSet<char>{          'c',           'f',    } },
+                {7, new HashSet<char>{'a',      'c',           'f',    } },
+                {4, new HashSet<char>{     'b', 'c', 'd',      'f',    } },
+                {2, new HashSet<char>{'a',      'c', 'd', 'e',      'g'} },
+                {3, new HashSet<char>{'a',      'c', 'd',      'f', 'g'} },
+                {5, new HashSet<char>{'a', 'b',      'd',      'f', 'g'} },
+                {6, new HashSet<char>{'a', 'b',      'd', 'e', 'f', 'g'} },
+                {0, new HashSet<char>{'a', 'b', 'c',      'e', 'f', 'g'} },
+                {9, new HashSet<char>{'a', 'b', 'c', 'd',      'f', 'g'} },
+                {8, new HashSet<char>{'a', 'b', 'c', 'd', 'e', 'f', 'g'} },
+            };
+
+            int count = 0;
+            foreach (string line in input)
+            {
+                Dictionary<char, int> counts = new Dictionary<char, int>();
+                foreach (char c in "abcdefg")
+                {
+                    counts[c] = 0;
+                }
+
+                string[][] patterns = line.Split(" | ").Select(s => s.Split(" ")).ToArray();
+                HashSet<int>[] potential = new HashSet<int>[patterns[0].Length];
+
+                int seven = -1;
+                int one = -1;
+                int four = -1;
+
+                for (int i = 0; i < patterns[0].Length; i++)
+                {
+                    potential[i] = new HashSet<int>();
+
+                    for (int j = 0; j < 10; j++)
+                    {
+                        if (digits[j].Count() == patterns[0][i].Length)
+                        {
+                            potential[i].Add(j);
+                            //Console.WriteLine(patterns[0][i] + " -> " + j);
+                            if (j == 7)
+                            {
+                                seven = i;
+                            } else if (j == 1)
+                            {
+                                one = i;
+                            } else if (j == 4)
+                            {
+                                four = i;
+                            }
+                        }
+                    }
+
+                    for (int ci = 0; ci < patterns[0][i].Length; ci++)
+                    {
+                        counts[patterns[0][i][ci]] += 1;
+                    }
+                }
+
+                Dictionary<char, HashSet<char>> mapping = new Dictionary<char, HashSet<char>>();
+                Dictionary<char, HashSet<char>> revmapping = new Dictionary<char, HashSet<char>>();
+                foreach (char c in "abcdefg")
+                {
+                    revmapping[c] = new HashSet<char>();
+                }
+                foreach (char c in "abcdefg")
+                {
+                    switch (counts[c])
+                    {
+                        case 6:
+                            mapping[c] = new HashSet<char> { 'b' };
+                            revmapping['b'].Add(c);
+                            break;
+                        case 9:
+                            mapping[c] = new HashSet<char> { 'f' };
+                            revmapping['f'].Add(c);
+                            break;
+                        case 4:
+                            mapping[c] = new HashSet<char> { 'e' };
+                            revmapping['e'].Add(c);
+                            break;
+                        case 8:
+                            mapping[c] = new HashSet<char> { 'a', 'c' };
+                            revmapping['a'].Add(c);
+                            revmapping['c'].Add(c);
+                            break;
+                        case 7:
+                            mapping[c] = new HashSet<char> { 'd', 'g' };
+                            revmapping['d'].Add(c);
+                            revmapping['g'].Add(c);
+                            break;
+                    }
+                    //Console.WriteLine(c + " -> " + mapping[c].Count());
+                }
+
+                var spot = new HashSet<char>(patterns[0][seven].ToArray());
+                var opot = new HashSet<char>(patterns[0][one].ToArray());
+                spot.ExceptWith(opot);
+                //Console.WriteLine("a is " + spot.First());
+                revmapping['a'].Remove(spot.First());
+                //Console.WriteLine("What is left is " + revmapping['a'].First());
+
+                mapping[revmapping['a'].First()] = new HashSet<char> { 'c' };
+                mapping[spot.First()] = new HashSet<char> { 'a' };
+                //Console.WriteLine("a? " + mapping[spot.First()].First());
+                //Console.WriteLine("c? " + mapping[revmapping['a'].First()].First());
+
+                foreach (char p in revmapping['d'])
+                {
+                    if (patterns[0][four].Contains(p))
+                    {
+                        //Console.WriteLine("Found it" + p);
+                        revmapping['d'].Remove(p);
+                        //Console.WriteLine("What is left is " + revmapping['d'].First());
+
+                        mapping[revmapping['d'].First()] = new HashSet<char> { 'g' };
+                        mapping[p] = new HashSet<char> { 'd' };
+                        //Console.WriteLine("d? " + mapping[p].First());
+                        //Console.WriteLine("g? " + mapping[revmapping['d'].First()].First());
+                    }
+                }
+
+                foreach (char c in "abcdefg")
+                { 
+                    //Console.WriteLine(c + " -> " + mapping[c].First());
+                }
+
+                string sd = "";
+                for (int i = 0; i < patterns[1].Length; i++)
+                {
+
+                    HashSet<char> rew = new HashSet<char>();
+                    foreach (char c in patterns[1][i])
+                    {
+                        rew.Add(mapping[c].First());
+                    }
+
+                    for (int d = 0; d < 10; d++)
+                    {
+                        if (digits[d].SetEquals(rew))
+                        {
+                            sd += d;
+                        }
+                    }
+                }
+                //Console.WriteLine(sd);
+                count += Int32.Parse(sd);
+            }
+            return count;
         }
     }
 }
