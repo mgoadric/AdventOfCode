@@ -27,6 +27,7 @@ namespace AoCSharp
                 { day6part1, day6part2 },
                 { day7part1, day7part2 },
                 { day8part1, day8part2 },
+                { day9part1, day9part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -687,6 +688,60 @@ namespace AoCSharp
                 count += Int32.Parse(sd);
             }
             return count;
+        }
+
+        static int day9part1(IEnumerable<string> input)
+        {
+            List<int[]> heightmap = new List<int[]>();
+            foreach(string s in input)
+            {
+                heightmap.Add(s.ToCharArray().Select(s => Int32.Parse("" + s)).ToArray());
+            }
+
+            int lows = 0;
+
+            List<Tuple<int, int>> orthogs = new List<Tuple<int, int>>
+            {
+                new Tuple<int, int>(-1, 0),
+                new Tuple<int, int>(1, 0),
+                new Tuple<int, int>(0, 1),
+                new Tuple<int, int>(0, -1),
+            };
+
+            for (int i = 0; i < heightmap.Count(); i++)
+            {
+                for (int j = 0; j < heightmap[i].Length; j++)
+                {
+
+                    bool smallest = true;
+                    foreach (Tuple<int, int> d in orthogs)
+                    {
+                        int nx = i + d.Item1;
+                        int ny = j + d.Item2;
+                        if (nx >= 0 && nx < heightmap.Count() &&
+                            ny >= 0 && ny < heightmap[i].Length &&
+                            heightmap[nx][ny] <= heightmap[i][j]) // why <=? not clear from program def
+                        {
+                            smallest = false;
+                            break;
+                        }
+
+
+                    }
+                    if (smallest)
+                    {
+                        lows += 1 + heightmap[i][j];
+                        Console.WriteLine(heightmap[i][j]);
+                    }
+                }
+            }
+
+            return lows;
+        }
+
+        static int day9part2(IEnumerable<string> input)
+        {
+            return -1;
         }
     }
 }
