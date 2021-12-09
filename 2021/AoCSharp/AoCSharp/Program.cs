@@ -508,13 +508,14 @@ namespace AoCSharp
                 Dictionary<char, HashSet<char>> maping = new Dictionary<char, HashSet<char>>();
                 foreach (char c in "abcdefg")
                 {
-                    maping[c] = new HashSet<char> {'a', 'b', 'c', 'd', 'e', 'f', 'g'};
+                    maping[c] = new HashSet<char> { 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
                 }
 
                 string[][] patterns = line.Split(" | ").Select(s => s.Split(" ")).ToArray();
                 HashSet<int>[] potential = new HashSet<int>[patterns[1].Length];
 
-                for (int i = 0; i < patterns[1].Length; i++) {
+                for (int i = 0; i < patterns[1].Length; i++)
+                {
                     potential[i] = new HashSet<int>();
 
                     for (int j = 0; j < 10; j++)
@@ -582,10 +583,12 @@ namespace AoCSharp
                             if (j == 7)
                             {
                                 seven = i;
-                            } else if (j == 1)
+                            }
+                            else if (j == 1)
                             {
                                 one = i;
-                            } else if (j == 4)
+                            }
+                            else if (j == 4)
                             {
                                 four = i;
                             }
@@ -662,7 +665,7 @@ namespace AoCSharp
                 }
 
                 foreach (char c in "abcdefg")
-                { 
+                {
                     //Console.WriteLine(c + " -> " + mapping[c].First());
                 }
 
@@ -693,7 +696,7 @@ namespace AoCSharp
         static int day9part1(IEnumerable<string> input)
         {
             List<int[]> heightmap = new List<int[]>();
-            foreach(string s in input)
+            foreach (string s in input)
             {
                 heightmap.Add(s.ToCharArray().Select(s => Int32.Parse("" + s)).ToArray());
             }
@@ -731,7 +734,7 @@ namespace AoCSharp
                     if (smallest)
                     {
                         lows += 1 + heightmap[i][j];
-                        Console.WriteLine(heightmap[i][j]);
+                        //Console.WriteLine(heightmap[i][j]);
                     }
                 }
             }
@@ -739,9 +742,93 @@ namespace AoCSharp
             return lows;
         }
 
+        // Flood fill time!
         static int day9part2(IEnumerable<string> input)
         {
-            return -1;
+            List<int[]> heightmap = new List<int[]>();
+            foreach (string s in input)
+            {
+                heightmap.Add(s.ToCharArray().Select(s => Int32.Parse("" + s)).ToArray());
+            }
+
+            Dictionary<Tuple<int, int>, int> lows = new Dictionary<Tuple<int, int>, int>();
+
+            List<Tuple<int, int>> orthogs = new List<Tuple<int, int>>
+            {
+                new Tuple<int, int>(-1, 0),
+                new Tuple<int, int>(1, 0),
+                new Tuple<int, int>(0, 1),
+                new Tuple<int, int>(0, -1),
+            };
+
+            for (int i = 0; i < heightmap.Count(); i++)
+            {
+                for (int j = 0; j < heightmap[i].Length; j++)
+                {
+
+                    bool smallest = true;
+                    foreach (Tuple<int, int> d in orthogs)
+                    {
+                        int nx = i + d.Item1;
+                        int ny = j + d.Item2;
+                        if (nx >= 0 && nx < heightmap.Count() &&
+                            ny >= 0 && ny < heightmap[i].Length &&
+                            heightmap[nx][ny] <= heightmap[i][j]) // why <=? not clear from program def
+                        {
+                            smallest = false;
+                            break;
+                        }
+                    }
+                    if (smallest)
+                    {
+                        // collect instead of add in
+                        lows[new Tuple<int, int>(i, j)] = 1;
+                        heightmap[i][j] = -1;
+                        //Console.WriteLine(heightmap[i][j]);
+                    }
+                }
+            }
+
+            foreach (Tuple<int, int> b in lows.Keys)
+            {
+                Queue<Tuple<int, int>> next = new Queue<Tuple<int, int>>();
+                next.Enqueue(b);
+                while (next.Count() > 0)
+                {
+                    Tuple<int, int> where = next.Dequeue();
+                    foreach (Tuple<int, int> d in orthogs)
+                    {
+                        int nx = where.Item1 + d.Item1;
+                        int ny = where.Item2 + d.Item2;
+                        if (nx >= 0 && nx < heightmap.Count() &&
+                            ny >= 0 && ny < heightmap[0].Length &&
+                            heightmap[nx][ny] >= 0 && heightmap[nx][ny] != 9)
+                        {
+                            next.Enqueue(new Tuple<int, int>(nx, ny));
+                            heightmap[nx][ny] = -1;
+                            lows[b] += 1;
+                        }
+
+                    }
+                }
+                //Console.WriteLine(lows[b]);
+            }
+
+            int sum = 1;
+            int count = 0;
+            var sortedbasins = lows.Values.OrderByDescending(x => x);
+            foreach (int v in sortedbasins)
+            {
+
+                if (count < 3)
+                {
+                    Console.WriteLine(v);
+                    sum *= v;
+                    count++;
+                }
+                else { break; }                
+            }
+            return sum;
         }
     }
 }
