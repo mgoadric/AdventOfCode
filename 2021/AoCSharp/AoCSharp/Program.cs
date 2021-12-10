@@ -28,6 +28,7 @@ namespace AoCSharp
                 { day7part1, day7part2 },
                 { day8part1, day8part2 },
                 { day9part1, day9part2 },
+                { day10part1, day10part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -822,13 +823,115 @@ namespace AoCSharp
 
                 if (count < 3)
                 {
-                    Console.WriteLine(v);
+                    //Console.WriteLine(v);
                     sum *= v;
                     count++;
                 }
-                else { break; }                
+                else { break; }
             }
             return sum;
+        }
+
+        static int day10part1(IEnumerable<string> input)
+        {
+            Dictionary<char, int> points = new Dictionary<char, int> {
+                {')', 3 },
+                {']', 57 },
+                {'}', 1197 },
+                {'>', 25137 },
+            };
+
+            Dictionary<char, char> pairsrev = new Dictionary<char, char> {
+                {')', '(' },
+                {']', '[' },
+                {'}', '{' },
+                {'>', '<' },
+            };
+
+            int p = 0;
+            foreach (string s in input)
+            {
+                Stack<char> st = new Stack<char>();
+                foreach (char c in s)
+                {
+                    if (pairsrev.Keys.Contains(c))
+                    {
+                        if (st.Count() == 0 || st.Peek() != pairsrev[c])
+                        {
+                            p += points[c];
+                            break;
+                        } else
+                        {
+                            st.Pop();
+                        }
+                    } else
+                    {
+                        st.Push(c);
+                    }
+                }
+            }
+
+            return p;
+        }
+
+        static int day10part2(IEnumerable<string> input)
+        {
+            Dictionary<char, int> points = new Dictionary<char, int> {
+                {'(', 1 },
+                {'[', 2 },
+                {'{', 3 },
+                {'<', 4 },
+            };
+
+            Dictionary<char, char> pairsrev = new Dictionary<char, char> {
+                {')', '(' },
+                {']', '[' },
+                {'}', '{' },
+                {'>', '<' },
+            };
+
+            List<long> allpoints = new List<long>();
+            foreach (string s in input)
+            {
+                bool valid = true;
+                Stack<char> st = new Stack<char>();
+                foreach (char c in s)
+                {
+                    if (pairsrev.Keys.Contains(c))
+                    {
+                        if (st.Count() == 0 || st.Peek() != pairsrev[c])
+                        {
+                            valid = false;
+                            break;
+                        }
+                        else
+                        {
+                            st.Pop();
+                        }
+                    }
+                    else
+                    {
+                        st.Push(c);
+                    }
+                }
+
+                if (valid)
+                {
+                    //Console.WriteLine(string.Join("", st.ToArray()));
+                    string comp = string.Join("", st.ToArray());
+                    long v = 0;
+                    foreach (char c in comp)
+                    {
+                        v *= 5;
+                        v += points[c];
+                    }
+                    //Console.WriteLine(v);
+                    allpoints.Add(v);
+                }
+            }
+            allpoints.Sort();
+            Console.WriteLine(allpoints[allpoints.Count() / 2]);
+            return -1;
         }
     }
 }
