@@ -1062,7 +1062,7 @@ namespace AoCSharp
                     foreach (string c in edges[t.Peek()])
                     {
                         //Console.WriteLine(c);
-                        if (c.All(char.IsUpper) || !t.Contains(c))
+                        if (c != "start" && (c.All(char.IsUpper) || !t.Contains(c) || noLowerRepeats(t)))
                         {
                             Stack<string> p = new Stack<string>(new Stack<string>(t));
                             p.Push(c);
@@ -1073,6 +1073,22 @@ namespace AoCSharp
             }
 
             return enders;
+        }
+
+        static bool noLowerRepeats(Stack<string> st)
+        {
+            HashSet<string> nodes = new HashSet<string>();
+            foreach (string s in st)
+            {
+                if (s.All(char.IsLower) && nodes.Contains(s))
+                {
+                    return false;
+                } else
+                {
+                    nodes.Add(s);
+                }
+            }
+            return true;
         }
     }
 }
