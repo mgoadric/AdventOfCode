@@ -29,6 +29,8 @@ namespace AoCSharp
                 { day8part1, day8part2 },
                 { day9part1, day9part2 },
                 { day10part1, day10part2 },
+                { day11part1, day11part2 },
+                { day12part1, day12part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -860,11 +862,13 @@ namespace AoCSharp
                         {
                             p += points[c];
                             break;
-                        } else
+                        }
+                        else
                         {
                             st.Pop();
                         }
-                    } else
+                    }
+                    else
                     {
                         st.Push(c);
                     }
@@ -932,6 +936,143 @@ namespace AoCSharp
             allpoints.Sort();
             Console.WriteLine(allpoints[allpoints.Count() / 2]);
             return -1;
+        }
+
+        static int day11part1(IEnumerable<string> input)
+        {
+
+            Octopi g = new Octopi(input);
+
+            int flashed = 0;
+
+            for (int i = 0; i < 100; i++)
+            {
+                flashed += g.step();
+                //Console.WriteLine(g);
+            }
+
+            Console.WriteLine(g);
+
+            return flashed;
+        }
+
+        static int day11part2(IEnumerable<string> input)
+        {
+
+            Octopi g = new Octopi(input);
+
+            int count = 1;
+            while (g.step() != 100)
+            {
+                count++;
+            }
+
+            Console.WriteLine(g);
+
+            return count;
+        }
+
+
+        static int day12part1(IEnumerable<string> input)
+        {
+            Dictionary<string, List<string>> edges = new Dictionary<string, List<string>>();
+
+            foreach (string s in input)
+            {
+                string[] nodes = s.Split("-");
+                if (!edges.ContainsKey(nodes[0]))
+                {
+                    edges[nodes[0]] = new List<string>();
+                } 
+                if (!edges.ContainsKey(nodes[1]))
+                {
+                    edges[nodes[1]] = new List<string>();
+                }
+               
+                edges[nodes[0]].Add(nodes[1]); // Don't use append
+                edges[nodes[1]].Add(nodes[0]);
+            }
+
+            int enders = 0;
+            Queue<Stack<string>> trails = new Queue<Stack<string>>();
+            Stack<string> start = new Stack<string>();
+            start.Push("start");
+            trails.Enqueue(start);
+            while (trails.Count() != 0)
+            {
+                Stack<string> t = trails.Dequeue();
+                if (t.Peek() == "end")
+                {
+                    enders++;
+                    //Console.WriteLine(string.Join(",", t.Reverse()));
+                }
+                else
+                {
+                    foreach (string c in edges[t.Peek()])
+                    {
+                        //Console.WriteLine(c);
+                        if (c.All(char.IsUpper) || !t.Contains(c))
+                        {
+                            Stack<string> p = new Stack<string>(new Stack<string>(t));
+                            p.Push(c);
+                            trails.Enqueue(p);
+                        }
+                    }
+                }
+            }
+
+            return enders;
+        }
+
+        static int day12part2(IEnumerable<string> input)
+        {
+            Dictionary<string, List<string>> edges = new Dictionary<string, List<string>>();
+
+            foreach (string s in input)
+            {
+                string[] nodes = s.Split("-");
+                if (!edges.ContainsKey(nodes[0]))
+                {
+                    edges[nodes[0]] = new List<string>();
+                }
+                if (!edges.ContainsKey(nodes[1]))
+                {
+                    edges[nodes[1]] = new List<string>();
+                }
+
+                edges[nodes[0]].Add(nodes[1]); // Don't use append
+                edges[nodes[1]].Add(nodes[0]);
+            }
+
+            int enders = 0;
+            Queue<Stack<string>> trails = new Queue<Stack<string>>();
+            Stack<string> start = new Stack<string>();
+            start.Push("start");
+            trails.Enqueue(start);
+            while (trails.Count() != 0)
+            {
+                Stack<string> t = trails.Dequeue();
+                if (t.Peek() == "end")
+                {
+                    enders++;
+                    //Console.WriteLine(string.Join(",", t.Reverse()));
+                }
+                else
+                {
+                    foreach (string c in edges[t.Peek()])
+                    {
+                        //Console.WriteLine(c);
+                        if (c.All(char.IsUpper) || !t.Contains(c))
+                        {
+                            Stack<string> p = new Stack<string>(new Stack<string>(t));
+                            p.Push(c);
+                            trails.Enqueue(p);
+                        }
+                    }
+                }
+            }
+
+            return enders;
         }
     }
 }
