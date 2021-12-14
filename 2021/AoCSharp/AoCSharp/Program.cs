@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,8 +43,15 @@ namespace AoCSharp
                     Console.WriteLine(String.Format("Day {0,2} Part {1}", day, part));
                     Console.WriteLine(" sample: " +
                                   puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}sample.txt", day))));
+
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+
                     Console.WriteLine(" full: " +
                                   puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}.txt", day))));
+
+                    sw.Stop();
+                    Console.WriteLine("Elapsed={0}", sw.Elapsed);
                 }
             }
 
