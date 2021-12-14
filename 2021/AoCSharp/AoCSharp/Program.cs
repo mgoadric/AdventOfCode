@@ -31,6 +31,8 @@ namespace AoCSharp
                 { day10part1, day10part2 },
                 { day11part1, day11part2 },
                 { day12part1, day12part2 },
+                { day13part1, day13part2 },
+                { day14part1, day14part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -983,12 +985,12 @@ namespace AoCSharp
                 if (!edges.ContainsKey(nodes[0]))
                 {
                     edges[nodes[0]] = new List<string>();
-                } 
+                }
                 if (!edges.ContainsKey(nodes[1]))
                 {
                     edges[nodes[1]] = new List<string>();
                 }
-               
+
                 edges[nodes[0]].Add(nodes[1]); // Don't use append
                 edges[nodes[1]].Add(nodes[0]);
             }
@@ -1083,12 +1085,264 @@ namespace AoCSharp
                 if (s.All(char.IsLower) && nodes.Contains(s))
                 {
                     return false;
-                } else
+                }
+                else
                 {
                     nodes.Add(s);
                 }
             }
             return true;
+        }
+
+        static int day13part1(IEnumerable<string> input)
+        {
+            HashSet<Tuple<int, int>> points = new HashSet<Tuple<int, int>>();
+            bool folding = false;
+            foreach (string s in input)
+            {
+                if (s == "")
+                {
+                    folding = true;
+                }
+                else if (folding)
+                {
+                    string[] fold = s.Split("=");
+                    int where = Int32.Parse(fold[1]);
+                    if (fold[0].Last() == 'x')
+                    {
+                        HashSet<Tuple<int, int>> points2 = new HashSet<Tuple<int, int>>();
+                        foreach (Tuple<int, int> p in points)
+                        {
+                            if (p.Item1 > where)
+                            {
+                                points2.Add(new Tuple<int, int>(where - (p.Item1 - where), p.Item2));
+                            }
+                            else
+                            {
+                                points2.Add(p);
+                            }
+                        }
+                        points = points2;
+                    }
+                    else
+                    {
+                        HashSet<Tuple<int, int>> points2 = new HashSet<Tuple<int, int>>();
+                        foreach (Tuple<int, int> p in points)
+                        {
+                            if (p.Item2 > where)
+                            {
+                                points2.Add(new Tuple<int, int>(p.Item1, where - (p.Item2 - where)));
+                            }
+                            else
+                            {
+                                points2.Add(p);
+                            }
+                        }
+                        points = points2;
+
+                    }
+                    break; // For part 1
+                }
+                else
+                {
+                    int[] p = s.Split(",").Select(s => Int32.Parse(s)).ToArray();
+                    points.Add(new Tuple<int, int>(p[0], p[1]));
+                }
+            }
+
+
+            return points.Count();
+        }
+
+        static int day13part2(IEnumerable<string> input)
+        {
+            HashSet<Tuple<int, int>> points = new HashSet<Tuple<int, int>>();
+            bool folding = false;
+
+            foreach (string s in input)
+            {
+                if (s == "")
+                {
+                    folding = true;
+                }
+                else if (folding)
+                {
+                    string[] fold = s.Split("=");
+                    int where = Int32.Parse(fold[1]);
+                    if (fold[0].Last() == 'x')
+                    {
+                        HashSet<Tuple<int, int>> points2 = new HashSet<Tuple<int, int>>();
+                        foreach (Tuple<int, int> p in points)
+                        {
+                            if (p.Item1 > where)
+                            {
+                                points2.Add(new Tuple<int, int>(where - (p.Item1 - where), p.Item2));
+                            }
+                            else
+                            {
+                                points2.Add(p);
+                            }
+                        }
+                        points = points2;
+                    }
+                    else
+                    {
+                        HashSet<Tuple<int, int>> points2 = new HashSet<Tuple<int, int>>();
+                        foreach (Tuple<int, int> p in points)
+                        {
+                            if (p.Item2 > where)
+                            {
+                                points2.Add(new Tuple<int, int>(p.Item1, where - (p.Item2 - where)));
+                            }
+                            else
+                            {
+                                points2.Add(p);
+                            }
+                        }
+                        points = points2;
+
+                    }
+                }
+                else
+                {
+                    int[] p = s.Split(",").Select(s => Int32.Parse(s)).ToArray();
+                    points.Add(new Tuple<int, int>(p[0], p[1]));
+                }
+            }
+
+            int maxx = 0;
+            int maxy = 0;
+            foreach (Tuple<int, int> p in points)
+            {
+                maxx = Math.Max(maxx, p.Item1);
+                maxy = Math.Max(maxy, p.Item2);
+            }
+
+            bool[,] letters = new bool[maxy + 1, maxx + 1];
+            foreach (Tuple<int, int> p in points)
+            {
+                letters[p.Item2, p.Item1] = true;
+            }
+
+            string message = "";
+            for (int i = 0; i < maxy + 1; i++)
+            {
+                for (int j = 0; j < maxx + 1; j++)
+                {
+                    if (letters[i, j])
+                    {
+                        message += "#";
+                    }
+                    else
+                    {
+                        message += " ";
+                    }
+                }
+                message += "\n";
+            }
+
+
+            Console.WriteLine(message);
+            return points.Count();
+        }
+
+        static int day14part1(IEnumerable<string> input)
+        {
+            Dictionary<string, Tuple<string, string>> rules = new Dictionary<string, Tuple<string, string>>();
+
+            string start = "";
+
+            bool second = false;
+            foreach (string s in input)
+            {
+                if (s == "")
+                {
+                    second = true;
+                } else if (second)
+                {
+                    string[] r = s.Split(" -> ");
+                    rules[r[0]] = new Tuple<string, string>(r[0][0] + r[1], r[1] + r[0][1]);
+                } else
+                {
+                    start = s;
+                }
+            }
+
+            Dictionary<string, int> counts = new Dictionary<string, int>();
+
+            for (int i = 0; i < start.Length - 1; i++)
+            {
+                string sub = start.Substring(i, 2);
+                if (!counts.ContainsKey(sub))
+                {
+                    counts[sub] = 0;
+                }
+                counts[sub] += 1;
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                Dictionary<string, int> counts2 = new Dictionary<string, int>();
+
+                string[] curkeys = counts.Keys.ToArray();
+                foreach (String let in curkeys)
+                {
+                    if (rules.ContainsKey(let))
+                    {
+                        int c = counts[let];
+
+                        if (!counts2.ContainsKey(rules[let].Item1))
+                        {
+                            counts2[rules[let].Item1] = 0;
+                        }
+                        counts2[rules[let].Item1] += c;
+
+                        if (!counts2.ContainsKey(rules[let].Item2))
+                        {
+                            counts2[rules[let].Item2] = 0;
+                        }
+                        counts2[rules[let].Item2] += c;
+                    } else
+                    {
+                        Console.WriteLine("ERROR!");
+                    }
+                }
+
+                counts = counts2;
+            }
+
+            Dictionary<char, int> letters = new Dictionary<char, int>();
+            foreach(String let in counts.Keys)
+            {
+                if (!letters.ContainsKey(let[0]))
+                {
+                    letters[let[0]] = 0;
+                }
+                letters[let[0]] += counts[let];
+            }
+            char lett = start[start.Length - 1];
+            if (!letters.ContainsKey(lett))
+            {
+                letters[lett] = 0;
+            }
+            letters[lett] += 1;
+
+            int max = 0;
+            int min = Int32.MaxValue;
+            foreach (char c in letters.Keys)
+            {
+                Console.WriteLine(c + " = " + letters[c]);
+                max = Math.Max(letters[c], max);
+                min = Math.Min(letters[c], min);
+            }
+
+            return max - min;
+        }
+
+
+        static int day14part2(IEnumerable<string> input)
+        {
+            return -1;
         }
     }
 }
