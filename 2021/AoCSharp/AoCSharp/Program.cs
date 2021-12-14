@@ -1342,6 +1342,98 @@ namespace AoCSharp
 
         static int day14part2(IEnumerable<string> input)
         {
+            Dictionary<string, Tuple<string, string>> rules = new Dictionary<string, Tuple<string, string>>();
+
+            string start = "";
+
+            bool second = false;
+            foreach (string s in input)
+            {
+                if (s == "")
+                {
+                    second = true;
+                }
+                else if (second)
+                {
+                    string[] r = s.Split(" -> ");
+                    rules[r[0]] = new Tuple<string, string>(r[0][0] + r[1], r[1] + r[0][1]);
+                }
+                else
+                {
+                    start = s;
+                }
+            }
+
+            Dictionary<string, long> counts = new Dictionary<string, long>();
+
+            for (int i = 0; i < start.Length - 1; i++)
+            {
+                string sub = start.Substring(i, 2);
+                if (!counts.ContainsKey(sub))
+                {
+                    counts[sub] = 0;
+                }
+                counts[sub] += 1;
+            }
+
+            for (int i = 0; i < 40; i++)
+            {
+                Dictionary<string, long> counts2 = new Dictionary<string, long>();
+
+                string[] curkeys = counts.Keys.ToArray();
+                foreach (String let in curkeys)
+                {
+                    if (rules.ContainsKey(let))
+                    {
+                        long c = counts[let];
+
+                        if (!counts2.ContainsKey(rules[let].Item1))
+                        {
+                            counts2[rules[let].Item1] = 0;
+                        }
+                        counts2[rules[let].Item1] += c;
+
+                        if (!counts2.ContainsKey(rules[let].Item2))
+                        {
+                            counts2[rules[let].Item2] = 0;
+                        }
+                        counts2[rules[let].Item2] += c;
+                    }
+                    else
+                    {
+                        Console.WriteLine("ERROR!");
+                    }
+                }
+
+                counts = counts2;
+            }
+
+            Dictionary<char, long> letters = new Dictionary<char, long>();
+            foreach (String let in counts.Keys)
+            {
+                if (!letters.ContainsKey(let[0]))
+                {
+                    letters[let[0]] = 0;
+                }
+                letters[let[0]] += counts[let];
+            }
+            char lett = start[start.Length - 1];
+            if (!letters.ContainsKey(lett))
+            {
+                letters[lett] = 0;
+            }
+            letters[lett] += 1;
+
+            long max = 0;
+            long min = Int64.MaxValue;
+            foreach (char c in letters.Keys)
+            {
+                Console.WriteLine(c + " = " + letters[c]);
+                max = Math.Max(letters[c], max);
+                min = Math.Min(letters[c], min);
+            }
+
+            Console.WriteLine(max - min);
             return -1;
         }
     }
