@@ -35,6 +35,7 @@ namespace AoCSharp
                 { day13part1, day13part2 },
                 { day14part1, day14part2 },
                 { day15part1, day15part2 },
+                { day16part1, day16part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -1498,7 +1499,88 @@ namespace AoCSharp
 
         static int day15part2(IEnumerable<string> input)
         {
+            List<int[]> smallgrid = new List<int[]>();
+            foreach (string s in input)
+            {
+                smallgrid.Add(s.ToCharArray().Select(s => Int32.Parse("" + s)).ToArray());
+            }
+
+
+            int sh = smallgrid.Count();
+            int sw = smallgrid.First().Length;
+
+            int h = 5 * smallgrid.Count() - 1;
+            int w = 5 * smallgrid.First().Length - 1;
+
+            int[,] grid = new int[h + 1, w + 1];
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+
+                    for (int a = 0; a < sh; a++)
+                    {
+                        for (int b = 0; b < sw; b++)
+                        {
+                            int val = smallgrid[a][b] + i + j;
+                            if (val > 9)
+                            {
+                                val = 1 + val % 10;
+                            }
+                            grid[i * sh + a, j * sw + b] = val;
+                        }
+                    }
+                }
+            }
+
+            List<Tuple<int, int>> neighbors = new List<Tuple<int, int>>
+            {
+                new Tuple<int, int>(-1, 0),
+                new Tuple<int, int>(1, 0),
+                new Tuple<int, int>(0, 1),
+                new Tuple<int, int>(0, -1),
+            };
+
+            HashSet<Tuple<int, int>> visited = new HashSet<Tuple<int, int>>();
+            PriorityQueue<Tuple<int, int, int>, int> heap = new PriorityQueue<Tuple<int, int, int>, int>();
+            heap.Enqueue(new Tuple<int, int, int>(0, 0, 0), h + w);
+            while (heap.Count > 0)
+            {
+                Tuple<int, int, int> loc = heap.Dequeue();
+                visited.Add(new Tuple<int, int>(loc.Item1, loc.Item2));
+                if (loc.Item1 == h && loc.Item2 == w)
+                {
+                    return loc.Item3;
+                }
+                else
+                {
+                    foreach (Tuple<int, int> n in neighbors)
+                    {
+                        int nx = loc.Item1 + n.Item1;
+                        int ny = loc.Item2 + n.Item2;
+                        if (nx >= 0 && nx <= h &&
+                            ny >= 0 && ny <= w &&
+                            !visited.Contains(new Tuple<int, int>(nx, ny)))
+                        {
+                            int mhd = h - nx + w - ny;
+                            int cost = loc.Item3 + grid[nx, ny];
+                            heap.Enqueue(new Tuple<int, int, int>(nx, ny, cost), cost + mhd);
+                        }
+                    }
+                }
+            }
             return -1;
         }
+
+        static int day16part1(IEnumerable<string> input)
+        {
+            return -1;
+        }
+
+        static int day16part2(IEnumerable<string> input)
+        {
+            return -1;
+        }
+
     }
 }
