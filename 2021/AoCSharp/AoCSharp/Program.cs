@@ -34,6 +34,7 @@ namespace AoCSharp
                 { day12part1, day12part2 },
                 { day13part1, day13part2 },
                 { day14part1, day14part2 },
+                { day15part1, day15part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -1320,7 +1321,7 @@ namespace AoCSharp
             }
 
             Dictionary<char, int> letters = new Dictionary<char, int>();
-            foreach(String let in counts.Keys)
+            foreach (String let in counts.Keys)
             {
                 if (!letters.ContainsKey(let[0]))
                 {
@@ -1442,6 +1443,61 @@ namespace AoCSharp
             }
 
             Console.WriteLine(max - min);
+            return -1;
+        }
+
+        static int day15part1(IEnumerable<string> input)
+        {
+            List<int[]> grid = new List<int[]>();
+            foreach (string s in input)
+            {
+                grid.Add(s.ToCharArray().Select(s => Int32.Parse("" + s)).ToArray());
+            }
+
+            int h = grid.Count() - 1;
+            int w = grid.First().Length - 1;
+
+            List<Tuple<int, int>> neighbors = new List<Tuple<int, int>>
+            {
+                new Tuple<int, int>(-1, 0),
+                new Tuple<int, int>(1, 0),
+                new Tuple<int, int>(0, 1),
+                new Tuple<int, int>(0, -1),
+            };
+
+            HashSet<Tuple<int, int>> visited = new HashSet<Tuple<int, int>>();
+            PriorityQueue<Tuple<int, int, int>, int> heap = new PriorityQueue<Tuple<int, int, int>, int>();
+            heap.Enqueue(new Tuple<int, int, int>(0, 0, 0), h + w);
+            while (heap.Count > 0)
+            {
+                Tuple<int, int, int> loc = heap.Dequeue();
+                visited.Add(new Tuple<int, int>(loc.Item1, loc.Item2));
+                if (loc.Item1 == h && loc.Item2 == w)
+                {
+                    return loc.Item3;
+                }
+                else
+                {
+                    foreach (Tuple<int, int> n in neighbors)
+                    {
+                        int nx = loc.Item1 + n.Item1;
+                        int ny = loc.Item2 + n.Item2;
+                        if (nx >= 0 && nx <= h &&
+                            ny >= 0 && ny <= w &&
+                            !visited.Contains(new Tuple<int, int>(nx, ny)))
+                        {
+                            int mhd = h - nx + w - ny;
+                            int cost = loc.Item3 + grid[nx][ny];
+                            heap.Enqueue(new Tuple<int, int, int>(nx, ny, cost), cost + mhd);
+                        }
+                    }
+                }
+            }
+            return -1;
+        }
+
+        static int day15part2(IEnumerable<string> input)
+        {
             return -1;
         }
     }
