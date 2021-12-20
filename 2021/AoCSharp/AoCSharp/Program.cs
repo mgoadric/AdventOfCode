@@ -50,7 +50,7 @@ namespace AoCSharp
                     sw.Start();
 
                     Console.WriteLine(" full: " +
-                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}.txt", day))));
+                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}sample.txt", day))));
 
                     sw.Stop();
                     Console.WriteLine("Elapsed={0}", sw.Elapsed);
@@ -1574,7 +1574,114 @@ namespace AoCSharp
 
         static int day16part1(IEnumerable<string> input)
         {
-            return -1;
+            String s = input.First();
+            Queue<char> hex = new Queue<char>(s.ToArray());
+            Queue<int> bits = new Queue<int>();
+
+            while (hex.Count > 0)
+            {
+                char h = hex.Dequeue();
+                Console.WriteLine("Reading " + h);
+                int b = (int)Convert.FromHexString("0" + h)[0];
+                bits.Enqueue((8 & b) >> 3);
+                bits.Enqueue((4 & b) >> 2);
+                bits.Enqueue((2 & b) >> 1);
+                bits.Enqueue(1 & b);
+
+            }
+
+            return parsePackets(bits, 0);
+        }
+
+        public static int parsePackets(Queue<int> bits, int level) { 
+            int version = 0;
+            int type = 0;
+            int number = 0;
+
+            State state = State.VERSION;
+
+            int v = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                v <<= 1;
+                v += bits.Dequeue();
+            }
+            version += v;
+            Console.WriteLine("version " + version);
+
+            type = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                type <<= 1;
+                type += bits.Dequeue();
+            }
+            Console.WriteLine("type " + type);
+            if (type == 4)
+            {
+                state = State.LITERAL;
+                number = 0;
+            }
+            else
+            {
+                state = State.OPERATOR;
+            }
+
+            if (state == State.LITERAL)
+            {
+
+                bool more = true;
+                while (more) {
+                    int first = bits.Dequeue();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        number <<= 1;
+                        number += bits.Dequeue();
+                        Console.WriteLine("number so far " + number);
+                    }
+                    if (first == 0)
+                    {
+                        more = false;
+                    }
+                }
+                return version;
+            }
+            else if (state == State.OPERATOR)
+            {
+
+                int lengthID = bits.Dequeue();
+                if (lengthID == 0)
+                {
+                    int length = 0;
+                    for (int i = 0; i < 15; i++)
+                    {
+                        length <<= 1;
+                        length += bits.Dequeue();
+                    }
+                    Console.WriteLine("length = " + length);
+
+                    Queue<int> newbits = new Queue<int>();
+                    for (int i = 0; i < length; i++)
+                    {
+                        newbits.Enqueue(bits.Dequeue());
+                    }
+                    parsePackets(newbits, -1);
+                }
+                else
+                {
+                    int nump = 0;
+                    for (int i = 0; i < 11; i++)
+                    {
+                        nump <<= 1;
+                        nump += bits.Dequeue();
+                    }
+
+                    Console.WriteLine("nump = " + nump);
+                    parsePackets(bits, level + nump);
+                }
+
+            }
+
+            return version;
         }
 
         static int day16part2(IEnumerable<string> input)
