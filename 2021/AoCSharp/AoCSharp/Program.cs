@@ -1590,10 +1590,10 @@ namespace AoCSharp
 
             }
 
-            return parsePackets(bits, 0);
+            return parsePackets(bits, 0, false);
         }
 
-        public static int parsePackets(Queue<int> bits, int level) { 
+        public static int parsePackets(Queue<int> bits, int level, bool cont) { 
             int version = 0;
             int type = 0;
             int number = 0;
@@ -1643,10 +1643,25 @@ namespace AoCSharp
                         more = false;
                     }
                 }
-                return version;
+                if (cont && bits.Count > 6)
+                {
+                    Console.WriteLine("continuing..");
+                    return version + parsePackets(bits, level, cont);
+                }
+                else if (!cont && bits.Count > 6 && level > 0)
+                {
+                    Console.WriteLine("recursing back to level " + (level - 1));
+                    return version + parsePackets(bits, level - 1, cont);
+                }
+                else
+                {
+                    Console.WriteLine("finished with packet chain.");
+                    return version;
+                }
+
             }
             else if (state == State.OPERATOR)
-            {
+            {   
 
                 int lengthID = bits.Dequeue();
                 if (lengthID == 0)
@@ -1657,6 +1672,7 @@ namespace AoCSharp
                         length <<= 1;
                         length += bits.Dequeue();
                     }
+                    Console.WriteLine("bitcount = " + bits.Count);
                     Console.WriteLine("length = " + length);
 
                     Queue<int> newbits = new Queue<int>();
@@ -1664,7 +1680,13 @@ namespace AoCSharp
                     {
                         newbits.Enqueue(bits.Dequeue());
                     }
-                    parsePackets(newbits, -1);
+                    if (cont && bits.Count > 6)
+                    {
+                        Console.WriteLine("continuing..");
+                        return version + parsePackets(newbits, level, true) +
+                            parsePackets(bits, level, cont);
+                    }
+                    return version + parsePackets(newbits, level, true);
                 }
                 else
                 {
@@ -1676,7 +1698,7 @@ namespace AoCSharp
                     }
 
                     Console.WriteLine("nump = " + nump);
-                    parsePackets(bits, level + nump);
+                    return version + parsePackets(bits, level + nump, cont);
                 }
 
             }
