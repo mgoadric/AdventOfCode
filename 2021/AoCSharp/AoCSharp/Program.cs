@@ -50,7 +50,7 @@ namespace AoCSharp
                     sw.Start();
 
                     Console.WriteLine(" full: " +
-                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}sample.txt", day))));
+                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}.txt", day))));
 
                     sw.Stop();
                     Console.WriteLine("Elapsed={0}", sw.Elapsed);
@@ -1680,7 +1680,7 @@ namespace AoCSharp
                     {
                         newbits.Enqueue(bits.Dequeue());
                     }
-                    if (cont && bits.Count > 6)
+                    if ((cont && bits.Count > 6) || (level > 0 && bits.Count > 6))
                     {
                         Console.WriteLine("continuing..");
                         return version + parsePackets(newbits, level, true) +
