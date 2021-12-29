@@ -50,7 +50,7 @@ namespace AoCSharp
                     sw.Start();
 
                     Console.WriteLine(" full: " +
-                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}.txt", day))));
+                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}sample.txt", day))));
 
                     sw.Stop();
                     Console.WriteLine("Elapsed={0}", sw.Elapsed);
@@ -1581,7 +1581,7 @@ namespace AoCSharp
             while (hex.Count > 0)
             {
                 char h = hex.Dequeue();
-                Console.WriteLine("Reading " + h);
+                //Console.WriteLine("Reading " + h);
                 int b = (int)Convert.FromHexString("0" + h)[0];
                 bits.Enqueue((8 & b) >> 3);
                 bits.Enqueue((4 & b) >> 2);
@@ -1607,7 +1607,145 @@ namespace AoCSharp
                 v += bits.Dequeue();
             }
             version += v;
-            Console.WriteLine("version " + version);
+            //Console.WriteLine("version " + version);
+
+            type = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                type <<= 1;
+                type += bits.Dequeue();
+            }
+            //Console.WriteLine("type " + type);
+            if (type == 4)
+            {
+                state = State.LITERAL;
+                number = 0;
+            }
+            else
+            {
+                state = State.OPERATOR;
+            }
+
+            if (state == State.LITERAL)
+            {
+
+                bool more = true;
+                while (more) {
+                    int first = bits.Dequeue();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        number <<= 1;
+                        number += bits.Dequeue();
+                        //Console.WriteLine("number so far " + number);
+                    }
+                    if (first == 0)
+                    {
+                        more = false;
+                    }
+                }
+                if (cont && bits.Count > 6)
+                {
+                    //Console.WriteLine("continuing..");
+                    return version + parsePackets(bits, level, cont);
+                }
+                else if (!cont && bits.Count > 6 && level > 0)
+                {
+                    //Console.WriteLine("recursing back to level " + (level - 1));
+                    return version + parsePackets(bits, level - 1, cont);
+                }
+                else
+                {
+                    //Console.WriteLine("finished with packet chain.");
+                    return version;
+                }
+
+            }
+            else if (state == State.OPERATOR)
+            {   
+
+                int lengthID = bits.Dequeue();
+                if (lengthID == 0)
+                {
+                    int length = 0;
+                    for (int i = 0; i < 15; i++)
+                    {
+                        length <<= 1;
+                        length += bits.Dequeue();
+                    }
+                    //Console.WriteLine("bitcount = " + bits.Count);
+                    //Console.WriteLine("length = " + length);
+
+                    Queue<int> newbits = new Queue<int>();
+                    for (int i = 0; i < length; i++)
+                    {
+                        newbits.Enqueue(bits.Dequeue());
+                    }
+                    if ((cont && bits.Count > 6) || (level > 0 && bits.Count > 6))
+                    {
+                        //Console.WriteLine("continuing..");
+                        return version + parsePackets(newbits, level, true) +
+                            parsePackets(bits, level, cont);
+                    }
+                    return version + parsePackets(newbits, level, true);
+                }
+                else
+                {
+                    int nump = 0;
+                    for (int i = 0; i < 11; i++)
+                    {
+                        nump <<= 1;
+                        nump += bits.Dequeue();
+                    }
+
+                    //Console.WriteLine("nump = " + nump);
+                    return version + parsePackets(bits, level + nump, cont);
+                }
+
+            }
+
+            return version;
+        }
+
+        static int day16part2(IEnumerable<string> input)
+        {
+            String s = input.First();
+            Queue<char> hex = new Queue<char>(s.ToArray());
+            Queue<int> bits = new Queue<int>();
+
+            while (hex.Count > 0)
+            {
+                char h = hex.Dequeue();
+                Console.WriteLine("Reading " + h);
+                int b = (int)Convert.FromHexString("0" + h)[0];
+                bits.Enqueue((8 & b) >> 3);
+                bits.Enqueue((4 & b) >> 2);
+                bits.Enqueue((2 & b) >> 1);
+                bits.Enqueue(1 & b);
+
+            }
+
+            Console.WriteLine(parsePackets2(bits, 0, false, -1));
+            return -1;
+        }
+
+        public static long parsePackets2(Queue<int> bits, int level, bool cont, int id)
+        {
+            Console.WriteLine(" at level " + level);
+
+            int version = 0;
+            int type = 0;
+            int number = 0;
+
+            State state = State.VERSION;
+
+            int v = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                v <<= 1;
+                v += bits.Dequeue();
+            }
+            version += v;
+            //Console.WriteLine("version " + version);
 
             type = 0;
             for (int i = 0; i < 3; i++)
@@ -1630,38 +1768,75 @@ namespace AoCSharp
             {
 
                 bool more = true;
-                while (more) {
+                while (more)
+                {
                     int first = bits.Dequeue();
                     for (int i = 0; i < 4; i++)
                     {
                         number <<= 1;
                         number += bits.Dequeue();
-                        Console.WriteLine("number so far " + number);
                     }
                     if (first == 0)
                     {
                         more = false;
                     }
                 }
+                Console.WriteLine("number is " + number);
                 if (cont && bits.Count > 6)
                 {
                     Console.WriteLine("continuing..");
-                    return version + parsePackets(bits, level, cont);
+                    switch (id)
+                    {
+                        case 0:
+                            return number + parsePackets2(bits, level, cont, id);
+                        case 1:
+                            return number * parsePackets2(bits, level, cont, id);
+                        case 2:
+                            return Math.Min(number, parsePackets2(bits, level, cont, id));
+                        case 3:
+                            return Math.Max(number, parsePackets2(bits, level, cont, id));
+                        case 5:
+                            return number > parsePackets2(bits, level, cont, id) ? 1 : 0;
+                        case 6:
+                            return number < parsePackets2(bits, level, cont, id) ? 1 : 0;
+                        case 7:
+                            return number == parsePackets2(bits, level, cont, id) ? 1 : 0;
+                    }
+                    Console.WriteLine("ERROR..");
+                    return version + parsePackets2(bits, level, cont, id);
                 }
                 else if (!cont && bits.Count > 6 && level > 0)
                 {
                     Console.WriteLine("recursing back to level " + (level - 1));
-                    return version + parsePackets(bits, level - 1, cont);
+                    switch (id)
+                    {
+                        case 0:
+                            return number + parsePackets2(bits, level - 1, cont, id);
+                        case 1:
+                            return number * parsePackets2(bits, level - 1, cont, id);
+                        case 2:
+                            return Math.Min(number, parsePackets2(bits, level - 1, cont, id));
+                        case 3:
+                            return Math.Max(number, parsePackets2(bits, level - 1, cont, id));
+                        case 5:
+                            return number > parsePackets2(bits, level - 1, cont, id) ? 1 : 0;
+                        case 6:
+                            return number < parsePackets2(bits, level - 1, cont, id) ? 1 : 0;
+                        case 7:
+                            return number == parsePackets2(bits, level - 1, cont, id) ? 1 : 0;
+                    }
+                    Console.WriteLine("ERROR..");
+                    return version + parsePackets2(bits, level - 1, cont, id);
                 }
                 else
                 {
                     Console.WriteLine("finished with packet chain.");
-                    return version;
+                    return number;
                 }
 
             }
             else if (state == State.OPERATOR)
-            {   
+            {
 
                 int lengthID = bits.Dequeue();
                 if (lengthID == 0)
@@ -1683,10 +1858,38 @@ namespace AoCSharp
                     if ((cont && bits.Count > 6) || (level > 0 && bits.Count > 6))
                     {
                         Console.WriteLine("continuing..");
-                        return version + parsePackets(newbits, level, true) +
-                            parsePackets(bits, level, cont);
+                        switch (id)
+                        {
+                            case 0:
+                                Console.WriteLine("sum..");
+                                return parsePackets2(newbits, level, true, type) + parsePackets2(bits, level, cont, id);
+                            case 1:
+                                Console.WriteLine("product..");
+                                return parsePackets2(newbits, level, true, type) * parsePackets2(bits, level, cont, id);
+                            case 2:
+                                Console.WriteLine("min..");
+                                return Math.Min(parsePackets2(newbits, level, true, type), parsePackets2(bits, level, cont, id));
+                            case 3:
+                                Console.WriteLine("max..");
+                                return Math.Max(parsePackets2(newbits, level, true, type), parsePackets2(bits, level, cont, id));
+                            case 5:
+                                Console.WriteLine("gt..");
+                                return parsePackets2(newbits, level, true, type) > parsePackets2(bits, level, cont, id) ? 1 : 0;
+                            case 6:
+                                Console.WriteLine("lt..");
+                                return parsePackets2(newbits, level, true, type) < parsePackets2(bits, level, cont, id) ? 1 : 0;
+                            case 7:
+                                Console.WriteLine("eq..");
+                                return parsePackets2(newbits, level, true, type) == parsePackets2(bits, level, cont, id) ? 1 : 0;
+                        }
+                        Console.WriteLine("ERROR..");
+                        return version + parsePackets2(newbits, level, true, type) +
+                            parsePackets2(bits, level, cont, id);
                     }
-                    return version + parsePackets(newbits, level, true);
+                    else
+                    {
+                        return parsePackets2(newbits, level, true, type);
+                    }
                 }
                 else
                 {
@@ -1698,18 +1901,12 @@ namespace AoCSharp
                     }
 
                     Console.WriteLine("nump = " + nump);
-                    return version + parsePackets(bits, level + nump, cont);
+                    return parsePackets2(bits, level + nump, cont, type);
                 }
 
             }
 
             return version;
         }
-
-        static int day16part2(IEnumerable<string> input)
-        {
-            return -1;
-        }
-
     }
 }
