@@ -1962,7 +1962,39 @@ namespace AoCSharp
         }
         static int day17part2(IEnumerable<string> input)
         {
-            return -1;
+            int xmin = 0;
+            int xmax = 0;
+            int ymin = 0;
+            int ymax = 0;
+            string[] stuff = input.First().Split("=");
+            string[] xs = stuff[1].Substring(0, stuff[1].Length - 3).Split("..");
+            xmin = Int32.Parse(xs[0]);
+            xmax = Int32.Parse(xs[1]);
+            string[] ys = stuff[2].Split("..");
+            ymin = Int32.Parse(ys[0]);
+            ymax = Int32.Parse(ys[1]);
+
+            Console.WriteLine("xmin:" + xmin + " xmax:" + xmax + " ymin:" + ymin + " ymax:" + ymax);
+
+            int count = 0;
+            for (int x = 19; x <= 227; x++)
+            {
+                for (int y = -134; y < 200; y++)
+                {
+                    Probe p = new Probe(x, y, xmin, xmax, ymin, ymax);
+                    while (!p.TooFar() && !p.TooLow())
+                    {
+                        bool hit = p.Step();
+                        if (hit)
+                        {
+                            Console.WriteLine(p);
+                            count++;
+                            break;
+                        }
+                    }
+                }
+            }
+            return count;
         }
         static int day18part1(IEnumerable<string> input)
         {
