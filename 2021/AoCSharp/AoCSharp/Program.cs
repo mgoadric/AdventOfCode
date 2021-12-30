@@ -36,6 +36,15 @@ namespace AoCSharp
                 { day14part1, day14part2 },
                 { day15part1, day15part2 },
                 { day16part1, day16part2 },
+                { day17part1, day17part2 },
+                { day18part1, day18part2 },
+                { day19part1, day19part2 },
+                { day20part1, day20part2 },
+                { day21part1, day21part2 },
+                { day22part1, day22part2 },
+                { day23part1, day23part2 },
+                { day24part1, day24part2 },
+                { day25part1, day25part2 },
             };
 
             for (int day = 1; day < (puzzles.Length / 2) + 1; day++)
@@ -50,7 +59,7 @@ namespace AoCSharp
                     sw.Start();
 
                     Console.WriteLine(" full: " +
-                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}sample.txt", day))));
+                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}.txt", day))));
 
                     sw.Stop();
                     Console.WriteLine("Elapsed={0}", sw.Elapsed);
@@ -984,7 +993,6 @@ namespace AoCSharp
             return count;
         }
 
-
         static int day12part1(IEnumerable<string> input)
         {
             Dictionary<string, List<string>> edges = new Dictionary<string, List<string>>();
@@ -1268,11 +1276,13 @@ namespace AoCSharp
                 if (s == "")
                 {
                     second = true;
-                } else if (second)
+                }
+                else if (second)
                 {
                     string[] r = s.Split(" -> ");
                     rules[r[0]] = new Tuple<string, string>(r[0][0] + r[1], r[1] + r[0][1]);
-                } else
+                }
+                else
                 {
                     start = s;
                 }
@@ -1312,7 +1322,8 @@ namespace AoCSharp
                             counts2[rules[let].Item2] = 0;
                         }
                         counts2[rules[let].Item2] += c;
-                    } else
+                    }
+                    else
                     {
                         Console.WriteLine("ERROR!");
                     }
@@ -1348,7 +1359,6 @@ namespace AoCSharp
 
             return max - min;
         }
-
 
         static int day14part2(IEnumerable<string> input)
         {
@@ -1593,7 +1603,8 @@ namespace AoCSharp
             return parsePackets(bits, 0, false);
         }
 
-        public static int parsePackets(Queue<int> bits, int level, bool cont) { 
+        public static int parsePackets(Queue<int> bits, int level, bool cont)
+        {
             int version = 0;
             int type = 0;
             int number = 0;
@@ -1630,7 +1641,8 @@ namespace AoCSharp
             {
 
                 bool more = true;
-                while (more) {
+                while (more)
+                {
                     int first = bits.Dequeue();
                     for (int i = 0; i < 4; i++)
                     {
@@ -1661,7 +1673,7 @@ namespace AoCSharp
 
             }
             else if (state == State.OPERATOR)
-            {   
+            {
 
                 int lengthID = bits.Dequeue();
                 if (lengthID == 0)
@@ -1901,12 +1913,120 @@ namespace AoCSharp
                     }
 
                     Console.WriteLine("nump = " + nump);
-                    return parsePackets2(bits, level + nump, cont, type);
+                    return parsePackets2(bits, level + nump, false, type);
                 }
 
             }
 
             return version;
+        }
+
+        static int day17part1(IEnumerable<string> input)
+        {
+            int xmin = 0;
+            int xmax = 0;
+            int ymin = 0;
+            int ymax = 0;
+            string[] stuff = input.First().Split("=");
+            string[] xs = stuff[1].Substring(0, stuff[1].Length - 3).Split("..");
+            xmin = Int32.Parse(xs[0]);
+            xmax = Int32.Parse(xs[1]);
+            string[] ys = stuff[2].Split("..");
+            ymin = Int32.Parse(ys[0]);
+            ymax = Int32.Parse(ys[1]);
+
+            Console.WriteLine("xmin:" + xmin + " xmax:" + xmax + " ymin:" + ymin + " ymax:" + ymax);
+
+            int maxy = 0;
+            for (int x = 1; x < 100; x++)
+            {
+                for (int y = 1; y < 200; y++)
+                {
+                    Probe p = new Probe(x, y, xmin, xmax, ymin, ymax);
+                    while (!p.TooFar() && !p.TooLow())
+                    {
+                        bool hit = p.Step();
+                        if (hit)
+                        {
+                            Console.WriteLine(p);
+                            if (p.GetMaxY() > maxy)
+                            {
+                                maxy = p.GetMaxY();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            return maxy;
+        }
+        static int day17part2(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day18part1(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day18part2(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day19part1(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day19part2(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day20part1(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day20part2(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day21part1(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day21part2(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day22part1(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day22part2(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day23part1(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day23part2(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day24part1(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day24part2(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day25part1(IEnumerable<string> input)
+        {
+            return -1;
+        }
+        static int day25part2(IEnumerable<string> input)
+        {
+            return -1;
         }
     }
 }
