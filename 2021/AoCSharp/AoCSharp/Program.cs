@@ -1817,7 +1817,7 @@ namespace AoCSharp
                     Console.WriteLine("ERROR..");
                     return version + parsePackets2(bits, level, cont, id);
                 }
-                else if (!cont && bits.Count > 6 && level > 0)
+                else if (!cont && bits.Count > 6 && level > 1)
                 {
                     Console.WriteLine("recursing back to level " + (level - 1));
                     switch (id)
@@ -1867,40 +1867,65 @@ namespace AoCSharp
                     {
                         newbits.Enqueue(bits.Dequeue());
                     }
-                    if ((cont && bits.Count > 6) || (level > 0 && bits.Count > 6))
+                    long result = parsePackets2(newbits, level, true, type);
+                    if (cont && bits.Count > 6)
                     {
                         Console.WriteLine("continuing..");
                         switch (id)
                         {
                             case 0:
                                 Console.WriteLine("sum..");
-                                return parsePackets2(newbits, level, true, type) + parsePackets2(bits, level, cont, id);
+                                return result + parsePackets2(bits, level, cont, id);
                             case 1:
                                 Console.WriteLine("product..");
-                                return parsePackets2(newbits, level, true, type) * parsePackets2(bits, level, cont, id);
+                                return result * parsePackets2(bits, level, cont, id);
                             case 2:
                                 Console.WriteLine("min..");
-                                return Math.Min(parsePackets2(newbits, level, true, type), parsePackets2(bits, level, cont, id));
+                                return Math.Min(result, parsePackets2(bits, level, cont, id));
                             case 3:
                                 Console.WriteLine("max..");
-                                return Math.Max(parsePackets2(newbits, level, true, type), parsePackets2(bits, level, cont, id));
+                                return Math.Max(result, parsePackets2(bits, level, cont, id));
                             case 5:
                                 Console.WriteLine("gt..");
-                                return parsePackets2(newbits, level, true, type) > parsePackets2(bits, level, cont, id) ? 1 : 0;
+                                return result > parsePackets2(bits, level, cont, id) ? 1 : 0;
                             case 6:
                                 Console.WriteLine("lt..");
-                                return parsePackets2(newbits, level, true, type) < parsePackets2(bits, level, cont, id) ? 1 : 0;
+                                return result < parsePackets2(bits, level, cont, id) ? 1 : 0;
                             case 7:
                                 Console.WriteLine("eq..");
-                                return parsePackets2(newbits, level, true, type) == parsePackets2(bits, level, cont, id) ? 1 : 0;
+                                return result == parsePackets2(bits, level, cont, id) ? 1 : 0;
                         }
                         Console.WriteLine("ERROR..");
                         return version + parsePackets2(newbits, level, true, type) +
                             parsePackets2(bits, level, cont, id);
                     }
+                    else if (!cont && bits.Count > 6 && level > 1)
+                    {
+                        Console.WriteLine("recursing back to level " + (level - 1));
+                        switch (id)
+                        {
+                            case 0:
+                                return result + parsePackets2(bits, level - 1, cont, id);
+                            case 1:
+                                return result * parsePackets2(bits, level - 1, cont, id);
+                            case 2:
+                                return Math.Min(result, parsePackets2(bits, level - 1, cont, id));
+                            case 3:
+                                return Math.Max(result, parsePackets2(bits, level - 1, cont, id));
+                            case 5:
+                                return result > parsePackets2(bits, level - 1, cont, id) ? 1 : 0;
+                            case 6:
+                                return result < parsePackets2(bits, level - 1, cont, id) ? 1 : 0;
+                            case 7:
+                                return result == parsePackets2(bits, level - 1, cont, id) ? 1 : 0;
+                        }
+                        Console.WriteLine("ERROR..");
+                        return version + parsePackets2(bits, level - 1, cont, id);
+                    }
+
                     else
                     {
-                        return parsePackets2(newbits, level, true, type);
+                        return result;
                     }
                 }
                 else
@@ -1913,7 +1938,65 @@ namespace AoCSharp
                     }
 
                     Console.WriteLine("nump = " + nump);
-                    return parsePackets2(bits, level + nump, false, type);
+                    long result = parsePackets2(bits, nump, false, type);
+                    if (cont && bits.Count > 6)
+                    {
+                        Console.WriteLine("continuing..");
+                        switch (id)
+                        {
+                            case 0:
+                                Console.WriteLine("sum..");
+                                return result + parsePackets2(bits, level, cont, id);
+                            case 1:
+                                Console.WriteLine("product..");
+                                return result * parsePackets2(bits, level, cont, id);
+                            case 2:
+                                Console.WriteLine("min..");
+                                return Math.Min(result, parsePackets2(bits, level, cont, id));
+                            case 3:
+                                Console.WriteLine("max..");
+                                return Math.Max(result, parsePackets2(bits, level, cont, id));
+                            case 5:
+                                Console.WriteLine("gt..");
+                                return result > parsePackets2(bits, level, cont, id) ? 1 : 0;
+                            case 6:
+                                Console.WriteLine("lt..");
+                                return result < parsePackets2(bits, level, cont, id) ? 1 : 0;
+                            case 7:
+                                Console.WriteLine("eq..");
+                                return result == parsePackets2(bits, level, cont, id) ? 1 : 0;
+                        }
+                        Console.WriteLine("ERROR..");
+                        return result +
+                            parsePackets2(bits, level, cont, id);
+                    }
+                    else if (!cont && bits.Count > 6 && level > 1)
+                    {
+                        Console.WriteLine("recursing back to level " + (level - 1));
+                        switch (id)
+                        {
+                            case 0:
+                                return result + parsePackets2(bits, level - 1, cont, id);
+                            case 1:
+                                return result * parsePackets2(bits, level - 1, cont, id);
+                            case 2:
+                                return Math.Min(result, parsePackets2(bits, level - 1, cont, id));
+                            case 3:
+                                return Math.Max(result, parsePackets2(bits, level - 1, cont, id));
+                            case 5:
+                                return result > parsePackets2(bits, level - 1, cont, id) ? 1 : 0;
+                            case 6:
+                                return result < parsePackets2(bits, level - 1, cont, id) ? 1 : 0;
+                            case 7:
+                                return result == parsePackets2(bits, level - 1, cont, id) ? 1 : 0;
+                        }
+                        Console.WriteLine("ERROR..");
+                        return version + parsePackets2(bits, level - 1, cont, id);
+                    }
+                    else
+                    {
+                        return result;
+                    }
                 }
 
             }
@@ -1948,7 +2031,7 @@ namespace AoCSharp
                         bool hit = p.Step();
                         if (hit)
                         {
-                            Console.WriteLine(p);
+                            //Console.WriteLine(p);
                             if (p.GetMaxY() > maxy)
                             {
                                 maxy = p.GetMaxY();
@@ -1979,7 +2062,7 @@ namespace AoCSharp
             int count = 0;
             for (int x = 19; x <= 227; x++)
             {
-                for (int y = -134; y < 200; y++)
+                for (int y = -134; y < 134; y++)
                 {
                     Probe p = new Probe(x, y, xmin, xmax, ymin, ymax);
                     while (!p.TooFar() && !p.TooLow())
@@ -1987,7 +2070,7 @@ namespace AoCSharp
                         bool hit = p.Step();
                         if (hit)
                         {
-                            Console.WriteLine(p);
+                            //Console.WriteLine(p);
                             count++;
                             break;
                         }
