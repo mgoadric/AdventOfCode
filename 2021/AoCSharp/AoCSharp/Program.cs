@@ -59,7 +59,7 @@ namespace AoCSharp
                     sw.Start();
 
                     Console.WriteLine(" full: " +
-                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}.txt", day))));
+                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}sample.txt", day))));
 
                     sw.Stop();
                     Console.WriteLine("Elapsed={0}", sw.Elapsed);
@@ -2081,7 +2081,25 @@ namespace AoCSharp
         }
         static int day18part1(IEnumerable<string> input)
         {
-            return -1;
+            SnailNode sn = null;
+            foreach (string s in input)
+            {
+                if (sn == null)
+                {
+                    sn = new SnailNode(s);
+                    //Console.WriteLine(sn);
+                }
+                else
+                {
+                    sn = sn.Add(new SnailNode(s));
+                    //Console.WriteLine(sn);
+                    while (sn.Reduce()) {
+                        //Console.WriteLine(sn);
+                    }
+                }
+            }
+            //Console.WriteLine(sn);
+            return sn.Magnitude();
         }
         static int day18part2(IEnumerable<string> input)
         {
