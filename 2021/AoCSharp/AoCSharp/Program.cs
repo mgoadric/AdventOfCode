@@ -59,7 +59,7 @@ namespace AoCSharp
                     sw.Start();
 
                     Console.WriteLine(" full: " +
-                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}sample.txt", day))));
+                                  puzzles[day - 1, part - 1](File.ReadLines(path + String.Format("input{0}.txt", day))));
 
                     sw.Stop();
                     Console.WriteLine("Elapsed={0}", sw.Elapsed);
@@ -2103,7 +2103,35 @@ namespace AoCSharp
         }
         static int day18part2(IEnumerable<string> input)
         {
-            return -1;
+            List<string> all = new List<string>();
+            foreach (string s in input)
+            {
+                all.Add(s);
+            }
+
+            int largest = 0;
+            for (int i = 0; i < all.Count; i++)
+            {
+                for (int j = 0; j < all.Count; j++)
+                {
+                    if (i != j)
+                    {
+                        SnailNode sn = new SnailNode(all[i]);
+                        sn = sn.Add(new SnailNode(all[j]));
+                        while (sn.Reduce()) { }
+                        if (sn.Magnitude() > largest)
+                        {
+                            largest = sn.Magnitude();
+                            //Console.WriteLine("i:" + i + " j:" + j + " " + sn);
+                        } else
+                        {
+                            //Console.WriteLine("i:" + i + " j:" + j + " " + sn + " mag:" + sn.Magnitude());
+                        }
+                    }
+                }
+            }
+
+            return largest;
         }
         static int day19part1(IEnumerable<string> input)
         {
