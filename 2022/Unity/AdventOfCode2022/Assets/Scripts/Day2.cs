@@ -12,7 +12,7 @@ public class Day2 : MonoBehaviour
     {
         Debug.Log("Hello");
 
-        string path = "Assets/Data/input2.txt";
+        string path = "Assets/Data/sampleinput2.txt";
 
         //Read the text from directly from the file
         StreamReader reader = new StreamReader(path); 
@@ -26,15 +26,12 @@ public class Day2 : MonoBehaviour
         reader.Close();
 
         // https://stackoverflow.com/questions/1273139/c-sharp-java-hashmap-equivalent
-        Dictionary<string, int> moveScores = new Dictionary<string, int>();
-        moveScores["X"] = 1;
-        moveScores["Y"] = 2;
-        moveScores["Z"] = 3;
+        Dictionary<string, string> moveMap = new Dictionary<string, string>();
+        moveMap["X"] = "A";
+        moveMap["Y"] = "B";
+        moveMap["Z"] = "C";
 
-        foreach (List<string> game in data) {
-            //Debug.Log(moveScores[game[1]]);
-        }
-
+/*
         Dictionary<Tuple<string, string>, int> gameScores = new Dictionary<Tuple<string, string>, int>();
         // https://stackoverflow.com/questions/723211/quick-way-to-create-a-list-of-values-in-c
         gameScores[new Tuple<string, string>("A", "X")] = 3;
@@ -47,11 +44,33 @@ public class Day2 : MonoBehaviour
         gameScores[new Tuple<string, string>("B", "X")] = 0;
         gameScores[new Tuple<string, string>("C", "Y")] = 0;
 
+*/
+        Dictionary<string, int> moveScores = new Dictionary<string, int>();
+        moveScores["A"] = 1;
+        moveScores["B"] = 2;
+        moveScores["C"] = 3;
+
+        foreach (List<string> game in data) {
+            //Debug.Log(moveScores[game[1]]);
+        }
+
+        Dictionary<Tuple<string, string>, int> gameScores = new Dictionary<Tuple<string, string>, int>();
+        // https://stackoverflow.com/questions/723211/quick-way-to-create-a-list-of-values-in-c
+        gameScores[new Tuple<string, string>("A", "A")] = 3;
+        gameScores[new Tuple<string, string>("B", "B")] = 3;
+        gameScores[new Tuple<string, string>("C", "C")] = 3;
+        gameScores[new Tuple<string, string>("A", "B")] = 6;
+        gameScores[new Tuple<string, string>("B", "C")] = 6;
+        gameScores[new Tuple<string, string>("C", "A")] = 6;
+        gameScores[new Tuple<string, string>("A", "C")] = 0;
+        gameScores[new Tuple<string, string>("B", "A")] = 0;
+        gameScores[new Tuple<string, string>("C", "B")] = 0;
+
         foreach (List<string> game in data) {
             //Debug.Log(gameScores[new Tuple<string, string>(game[0], game[1])]);
         }
 
-        int sum = data.Select(game => moveScores[game[1]] + gameScores[new Tuple<string, string>(game[0], game[1])]).Sum();
+        int sum = data.Select(game => moveScores[moveMap[game[1]]] + gameScores[new Tuple<string, string>(game[0], moveMap[game[1]])]).Sum();
         Debug.Log("Part 1 Total = " + sum);
 
 
