@@ -12,7 +12,7 @@ public class Day2 : MonoBehaviour
     {
         Debug.Log("Hello");
 
-        string path = "Assets/Data/sampleinput2.txt";
+        string path = "Assets/Data/input2.txt";
 
         //Read the text from directly from the file
         StreamReader reader = new StreamReader(path); 
@@ -31,27 +31,24 @@ public class Day2 : MonoBehaviour
         moveMap["Y"] = "B";
         moveMap["Z"] = "C";
 
-/*
-        Dictionary<Tuple<string, string>, int> gameScores = new Dictionary<Tuple<string, string>, int>();
-        // https://stackoverflow.com/questions/723211/quick-way-to-create-a-list-of-values-in-c
-        gameScores[new Tuple<string, string>("A", "X")] = 3;
-        gameScores[new Tuple<string, string>("B", "Y")] = 3;
-        gameScores[new Tuple<string, string>("C", "Z")] = 3;
-        gameScores[new Tuple<string, string>("A", "Y")] = 6;
-        gameScores[new Tuple<string, string>("B", "Z")] = 6;
-        gameScores[new Tuple<string, string>("C", "X")] = 6;
-        gameScores[new Tuple<string, string>("A", "Z")] = 0;
-        gameScores[new Tuple<string, string>("B", "X")] = 0;
-        gameScores[new Tuple<string, string>("C", "Y")] = 0;
+        Dictionary<Tuple<string, string>, string> moveLookup = new Dictionary<Tuple<string, string>, string>();
+        moveLookup[new Tuple<string, string>("A", "X")] = "C";
+        moveLookup[new Tuple<string, string>("B", "Y")] = "B";
+        moveLookup[new Tuple<string, string>("C", "Z")] = "A";
+        moveLookup[new Tuple<string, string>("A", "Y")] = "A";
+        moveLookup[new Tuple<string, string>("B", "Z")] = "C";
+        moveLookup[new Tuple<string, string>("C", "X")] = "B";
+        moveLookup[new Tuple<string, string>("A", "Z")] = "B";
+        moveLookup[new Tuple<string, string>("B", "X")] = "A";
+        moveLookup[new Tuple<string, string>("C", "Y")] = "C";
 
-*/
         Dictionary<string, int> moveScores = new Dictionary<string, int>();
         moveScores["A"] = 1;
         moveScores["B"] = 2;
         moveScores["C"] = 3;
 
         foreach (List<string> game in data) {
-            //Debug.Log(moveScores[game[1]]);
+            //Debug.Log(moveScores[moveLookup[new Tuple<string, string>(game[0], game[1])]]);
         }
 
         Dictionary<Tuple<string, string>, int> gameScores = new Dictionary<Tuple<string, string>, int>();
@@ -73,6 +70,9 @@ public class Day2 : MonoBehaviour
         int sum = data.Select(game => moveScores[moveMap[game[1]]] + gameScores[new Tuple<string, string>(game[0], moveMap[game[1]])]).Sum();
         Debug.Log("Part 1 Total = " + sum);
 
+        int sum2 = data.Select(game => moveScores[moveLookup[new Tuple<string, string>(game[0], game[1])]] + 
+        gameScores[new Tuple<string, string>(game[0], moveLookup[new Tuple<string, string>(game[0], game[1])])]).Sum();
+        Debug.Log("Part 2 Total = " + sum2);
 
     }
 
