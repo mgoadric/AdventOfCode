@@ -28,6 +28,7 @@ public class Day3 : MonoBehaviour
                    ruck.Substring(ruck.Length / 2))).ToList();
 
         //Debug.Log(data.Count());
+        reader.Close();
 
         int sum = 0;
         foreach (Tuple<string, string> ruck in data)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // https://medium.com/nerd-for-tech/implementing-a-game-manager-using-the-singleton-pattern-unity-eb614b9b1a74
 public class GameManager : MonoBehaviour
@@ -32,5 +33,9 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    void LoadScene() {
+        SceneManager.LoadScene("Day1");
     }
 }
