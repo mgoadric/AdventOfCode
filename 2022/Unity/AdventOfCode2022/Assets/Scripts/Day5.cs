@@ -9,11 +9,10 @@ using UnityEngine;
 public class Day5 : MonoBehaviour
 {
    
-    public bool sample = false;
+    private bool sample = false;
 
     private List<Tuple<int, int, int>> data;
 
-   //private string[] starting = {"ZN", "MCD", "P"};
 
 /*
         [Q] [B]         [H]        
@@ -27,8 +26,9 @@ public class Day5 : MonoBehaviour
  1   2   3   4   5   6   7   8   9 
 */
 
-    private string[] starting = {"DBJV",
-    "PVBWRDF", "RGFLDCWQ", "WJPMLNDB", "HNBPCSQ", "RDBSNG", "ZBPMQFSH", "WLF", "SVFMR"};
+    //private string[] starting = {"ZN", "MCD", "P"};
+
+    private string[] starting = {"DBJV", "PVBWRDF", "RGFLDCWQ", "WJPMLNDB", "HNBPCSQ", "RDBSNG", "ZBPMQFSH", "WLF", "SVFMR"};
 
     private void LoadData(string filename) {
 
@@ -43,7 +43,7 @@ public class Day5 : MonoBehaviour
         foreach (string line in lines) {
             Regex r = new Regex(pat, RegexOptions.IgnoreCase);
             Match m = r.Match(line);
-            Debug.Log(m.Groups[1].Value + ", " + m.Groups[2].Value + ", " + m.Groups[3].Value);
+            //Debug.Log(m.Groups[1].Value + ", " + m.Groups[2].Value + ", " + m.Groups[3].Value);
             data.Add(new Tuple<int, int, int>(int.Parse(m.Groups[1].Value), 
                 int.Parse(m.Groups[2].Value), 
                 int.Parse(m.Groups[3].Value)));
@@ -52,19 +52,11 @@ public class Day5 : MonoBehaviour
         Debug.Log(data.Count());
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        string path = "Assets/Data/";
-        if (sample) {
-            path += "sample";
-        }
-        LoadData(path + "input5.txt");
-        
+    private void PartOne() {
         List<Stack<char>> stacks = new List<Stack<char>>();
         foreach (string initial in starting) {
             Stack<char> s = new Stack<char>(initial.ToArray());
-            Debug.Log(s.Peek());
+            //Debug.Log(s.Peek());
             stacks.Add(s);
         }
 
@@ -79,6 +71,45 @@ public class Day5 : MonoBehaviour
             tops += s.Peek();
         }
         Debug.Log("Part 1: " + tops);
+    }
+
+    private void PartTwo() {
+        List<Stack<char>> stacks = new List<Stack<char>>();
+        foreach (string initial in starting) {
+            Stack<char> s = new Stack<char>(initial.ToArray());
+            //Debug.Log(s.Peek());
+            stacks.Add(s);
+        }
+
+        foreach (Tuple<int, int, int> instruction in data) {
+            Stack<char> temp = new Stack<char>();
+            for (int i = 0; i < instruction.Item1; i++) {
+                temp.Push(stacks[instruction.Item2 - 1].Pop());
+            }
+            for (int i = 0; i < instruction.Item1; i++) {
+                stacks[instruction.Item3 - 1].Push(temp.Pop());
+            }
+        }
+
+        string tops = "";
+        foreach (Stack<char> s in stacks) {
+            tops += s.Peek();
+        }
+        Debug.Log("Part 2: " + tops);
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        string path = "Assets/Data/";
+        if (sample) {
+            path += "sample";
+        }
+        LoadData(path + "input5.txt");
+        
+        PartOne();
+
+        PartTwo();
     }
 
     // Update is called once per frame
