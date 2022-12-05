@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
         
     }
 
-    void LoadScene() {
+    public void LoadScene() {
         SceneManager.LoadScene("Day1");
     }
 }
