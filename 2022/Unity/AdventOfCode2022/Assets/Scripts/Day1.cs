@@ -8,9 +8,11 @@ using UnityEngine;
 public class Day1 : MonoBehaviour
 {
 
-    public bool sample = true;
+    private bool sample = true;
 
     private List<List<int>> data;
+
+    public GameObject elfPrefab;
 
     private void LoadData(string filename) {
 
@@ -35,11 +37,29 @@ public class Day1 : MonoBehaviour
         foreach (List<int> backpack in data) {
             Debug.Log(backpack.Sum());
         }
+        
+        StartCoroutine("SpawnElf");
+
+    }
+
+    IEnumerator SpawnElf()
+    {
+        int x = -4;
+        foreach(List<int> backpack in data) 
+        {
+            GameObject go = Instantiate(elfPrefab, new Vector3(0, 8, 0), Quaternion.identity);
+            go.GetComponent<ElfMovement>().target = new Vector3(x, 0, 0);
+            yield return new WaitForSeconds(1f);
+            x += 2;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+
         
     }
+
+    
 }
