@@ -121,7 +121,7 @@ AnimatorStateTransition:
     m_EventTreshold: 0
   - m_ConditionMode: 4
     m_ConditionEvent: angle
-    m_EventTreshold: -135
+    m_EventTreshold: -134
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -3879906125618090829}
   m_Solo: 0
@@ -243,7 +243,7 @@ AnimatorStateTransition:
     m_EventTreshold: 0
   - m_ConditionMode: 4
     m_ConditionEvent: angle
-    m_EventTreshold: -45
+    m_EventTreshold: -44
   - m_ConditionMode: 3
     m_ConditionEvent: angle
     m_EventTreshold: -135
@@ -274,7 +274,7 @@ AnimatorStateTransition:
     m_EventTreshold: 0
   - m_ConditionMode: 3
     m_ConditionEvent: angle
-    m_EventTreshold: 45
+    m_EventTreshold: 44
   - m_ConditionMode: 4
     m_ConditionEvent: angle
     m_EventTreshold: 135
@@ -385,7 +385,7 @@ AnimatorStateTransition:
     m_EventTreshold: 0
   - m_ConditionMode: 3
     m_ConditionEvent: angle
-    m_EventTreshold: 135
+    m_EventTreshold: 134
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -3879906125618090829}
   m_Solo: 0

@@ -44,13 +44,13 @@ public class Day1 : MonoBehaviour
 
     IEnumerator SpawnElf()
     {
-        int x = -4;
+        int x = -6;
         foreach(List<int> backpack in data) 
         {
-            GameObject go = Instantiate(elfPrefab, new Vector3(0, 8, 0), Quaternion.identity);
+            GameObject go = Instantiate(elfPrefab, new Vector3(0, 6, 0), Quaternion.identity);
             go.GetComponent<ElfMovement>().target = new Vector3(x, 0, 0);
             yield return new WaitForSeconds(1f);
-            x += 2;
+            x += 3;
         }
     }
 
