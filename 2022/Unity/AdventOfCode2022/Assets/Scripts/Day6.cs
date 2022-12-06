@@ -11,10 +11,10 @@ public class Day6 : MonoBehaviour
 
     private List<string> data;
 
-    private int SOP(string signal) {
+    private int SOP(string signal, int distinct) {
         int[] back = new int[signal.Length];
         for (int i = 0; i < signal.Length; i++) {
-            for (int k = 1; k <= 3; k++) {
+            for (int k = 1; k <= distinct; k++) {
                 if (i - k >= 0 && signal[i] != signal[i - k]) {
                     back[i]++;
                 } else {
@@ -23,9 +23,10 @@ public class Day6 : MonoBehaviour
             }
             //Debug.Log(back[i]);
             bool good = true;
-            for (int k = 0; k < 3; k++) {
-                if (i - k < 0 || back[i - k] < 3 - k) {
+            for (int k = 0; k < distinct; k++) {
+                if (i - k < 0 || back[i - k] < distinct - k) {
                     good = false;
+                    break;
                 }
             }
             if (good) {
@@ -55,8 +56,9 @@ public class Day6 : MonoBehaviour
         LoadData(path + "input6.txt");
         
         foreach (string signal in data) {
-            int start = SOP(signal);
-            Debug.Log(start + ": " + signal.Substring(start - 4, 4));
+            int distinct = 14;
+            int start = SOP(signal, distinct - 1);
+            Debug.Log(start + ": " + signal.Substring(start - distinct, distinct));
         }
     }
     // Update is called once per frame
