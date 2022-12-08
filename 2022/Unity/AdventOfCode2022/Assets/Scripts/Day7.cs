@@ -59,16 +59,21 @@ public class Day7 : MonoBehaviour
                 current.files.Add(pieces[1], new FileDir(int.Parse(pieces[0]), current));
             }
         }
-        print(root.FileSize());
 
-        List<int> smalls = new List<int>();
-        root.LimitedFileSize(smalls);
-        foreach(int i in smalls) {
-            print("small? " + i);
+        int rootSize = root.FileSize();
+        print(rootSize);
+
+        List<int> sizes = new List<int>();
+        root.AllFileSize(sizes);
+        foreach(int i in sizes) {
+            print("dirsize " + i);
         }
 
-        print(smalls.Sum());
+        print("Part 1: " + sizes.Where(x => x <= 100000).Sum());
 
+        int free = 70000000 - rootSize;
+
+        print("Part 2: " + sizes.Where(x => free + x > 30000000).OrderByDescending(x => x).Last());
 
     }
     // Update is called once per frame

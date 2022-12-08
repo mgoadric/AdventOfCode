@@ -21,12 +21,12 @@ public class FileDir {
         return allsize;
     }
 
-    public int LimitedFileSize(List<int> smalls) {
+    public int AllFileSize(List<int> smalls) {
         int allsize = size;
         foreach (FileDir f in files.Values) {
-            allsize += f.LimitedFileSize(smalls);
+            allsize += f.AllFileSize(smalls);
         }
-        if (size == 0 && allsize <= 100000) {
+        if (size == 0) {
             smalls.Add(allsize);
         }
         return allsize;
