@@ -31,7 +31,7 @@ public class Day9 : MonoBehaviour
         }
         LoadData(path + "input9.txt"); 
 
-        Rope r = new Rope(0, 0);
+        Rope r = new Rope(0, 0, 10);
         foreach (Tuple<char, int> movement in data) {
             r.Move(movement);
         }
