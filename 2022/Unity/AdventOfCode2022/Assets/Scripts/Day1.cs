@@ -49,6 +49,10 @@ public class Day1 : MonoBehaviour
         {
             GameObject go = Instantiate(elfPrefab, new Vector3(0, 6, 0), Quaternion.identity);
             go.GetComponent<ElfMovement>().target = new Vector3(x, 0, 0);
+
+            // Add 
+
+            // Wait 1 second before the next 
             yield return new WaitForSeconds(1f);
             x += 3;
         }
