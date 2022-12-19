@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Day10 : MonoBehaviour
 {
 
     public GameObject pixelPrefab;
+
+    public Slider mySlider;
 
     public GameObject[,] screen = new GameObject[40, 6];
 
@@ -93,6 +96,6 @@ public class Day10 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        raySpeed = mySlider.value;
     }
 }

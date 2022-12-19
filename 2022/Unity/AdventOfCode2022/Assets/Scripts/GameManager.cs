@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int CurrentScene { get => currentScene; }
+
     void Awake() {
         _s = this;
         DontDestroyOnLoad(this.gameObject);
@@ -39,7 +41,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void PreviousScene() {
-        if (currentScene <= 1) {
+        if (CurrentScene <= 1) {
             SceneManager.LoadScene("MainMenu");
         } else {
             currentScene--;
@@ -48,7 +50,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void NextScene() {
-        if (currentScene >= 12) {
+        if (CurrentScene >= 12) {
             SceneManager.LoadScene("MainMenu");
         } else {
             currentScene++;
@@ -57,8 +59,8 @@ public class GameManager : MonoBehaviour
     }
 
     public void LoadScene() {
-        SceneManager.LoadScene("Day" + currentScene);
-        if (currentScene != 0) {
+        SceneManager.LoadScene("Day" + CurrentScene);
+        if (CurrentScene != 0) {
             SceneManager.LoadScene("GUI", LoadSceneMode.Additive);
         }
     }
