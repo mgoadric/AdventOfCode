@@ -13,6 +13,7 @@ public class Day1 : MonoBehaviour
     private List<List<int>> data;
 
     public GameObject elfPrefab;
+    public GameObject backpackPrefab;
 
     private void LoadData(string filename) {
 
@@ -50,7 +51,10 @@ public class Day1 : MonoBehaviour
             GameObject go = Instantiate(elfPrefab, new Vector3(0, 6, 0), Quaternion.identity);
             go.GetComponent<ElfMovement>().target = new Vector3(x, 0, 0);
 
-            // Add 
+            // Add Backpack
+            GameObject bp = Instantiate(backpackPrefab, new Vector3(0, 6, 1), Quaternion.identity);
+            bp.gameObject.transform.parent = go.transform;
+            bp.GetComponent<SpriteRenderer>().size = new Vector2(1, backpack.Sum() / 10000.0f);
 
             // Wait 1 second before the next 
             yield return new WaitForSeconds(1f);
@@ -64,6 +68,4 @@ public class Day1 : MonoBehaviour
 
         
     }
-
-    
 }

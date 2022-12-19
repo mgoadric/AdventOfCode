@@ -168,6 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elfPrefab: {fileID: 8328444870323328753, guid: e86ba9e6f1509435b938bd19226368d2, type: 3}
+  backpackPrefab: {fileID: 5135749236120523278, guid: 93ba03d9c4cb24860a4ee8d5ba1fb56f, type: 3}
 --- !u!1 &1352534227
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,7 +330,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1844363749}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.03, y: -0.03, z: 2}
+  m_LocalPosition: {x: -0.03, y: -0.03, z: 10}
   m_LocalScale: {x: 18, y: 12, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
