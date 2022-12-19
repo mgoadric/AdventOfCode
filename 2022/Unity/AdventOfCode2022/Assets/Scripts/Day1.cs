@@ -8,7 +8,7 @@ using UnityEngine;
 public class Day1 : MonoBehaviour
 {
 
-    private bool sample = true;
+    private bool sample = false;
 
     private List<List<int>> data;
 
@@ -45,20 +45,32 @@ public class Day1 : MonoBehaviour
 
     IEnumerator SpawnElf()
     {
-        int x = -6;
+        float x = -6;
+        float y = -3.5f;
         foreach(List<int> backpack in data) 
         {
-            GameObject go = Instantiate(elfPrefab, new Vector3(0, 6, 0), Quaternion.identity);
-            go.GetComponent<ElfMovement>().target = new Vector3(x, 0, 0);
+            float startX = UnityEngine.Random.Range(-6, 6);
+
+            // Add Elf
+            GameObject go = Instantiate(elfPrefab, new Vector3(startX, 6, 0), Quaternion.identity);
 
             // Add Backpack
-            GameObject bp = Instantiate(backpackPrefab, new Vector3(0, 6, 1), Quaternion.identity);
+            GameObject bp = Instantiate(backpackPrefab, new Vector3(startX, 6, 1), Quaternion.identity);
             bp.gameObject.transform.parent = go.transform;
-            bp.GetComponent<SpriteRenderer>().size = new Vector2(1, backpack.Sum() / 10000.0f);
+            bp.GetComponent<SpriteRenderer>().size = new Vector2(1, backpack.Sum() / 60000.0f);
 
-            // Wait 1 second before the next 
-            yield return new WaitForSeconds(1f);
-            x += 3;
+            go.gameObject.transform.localScale = new Vector3(0.25f, 0.25f, 1);
+
+            // Start Movement
+            go.GetComponent<ElfMovement>().target = new Vector3(x, y, 0);
+
+            // Wait 0.1 second before the next 
+            yield return new WaitForSeconds(.1f);
+            x += 0.5f;
+            if (x >= 6) {
+                x = -6;
+                y += 0.75f;
+            }
         }
     }
 
