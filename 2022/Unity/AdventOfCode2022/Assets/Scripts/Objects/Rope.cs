@@ -5,48 +5,46 @@ using UnityEngine;
 
 public class Rope {
 
-    private class Position {
-        public int x; 
-        public int y;
+private class Position {
+    public int x; 
+    public int y;
 
-        public Position(int x, int y)
-        {
-            this.x = x;
-            this.y = y;
-        }
-
-        // https://stackoverflow.com/questions/8952003/how-does-hashset-compare-elements-for-equality
-        public override int GetHashCode() { return x * 1000000 + y; } // TODO Why does x * y not work??
-        public override bool Equals(object obj) { 
-            // https://dotnettutorials.net/lesson/why-we-should-override-equals-method/
-            // If the passed object is null
-            if (obj == null)
-            {
-                return false;
-            }
-            if (!(obj is Position))
-            {
-                return false;
-            }
-            return (this.x == ((Position)obj).x)
-                && (this.y == ((Position)obj).y);
-        }
-
-        public float Distance(Position other) {
-            return MathF.Sqrt(MathF.Pow(x - other.x, 2) + MathF.Pow(y - other.y, 2));
-        }
-
-        public bool Follow(Position other) {
-            if (Distance(other) > 1.5) {
-                x += Math.Sign(other.x - x);
-                y += Math.Sign(other.y - y);
-                return true;
-            }
-            return false;
-        }
+    public Position(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
     }
 
+    // https://stackoverflow.com/questions/8952003/how-does-hashset-compare-elements-for-equality
+    public override int GetHashCode() { return x * 1000000 + y; } // TODO Why does x * y not work??
+    public override bool Equals(object obj) { 
+        // https://dotnettutorials.net/lesson/why-we-should-override-equals-method/
+        // If the passed object is null
+        if (obj == null)
+        {
+            return false;
+        }
+        if (!(obj is Position))
+        {
+            return false;
+        }
+        return (this.x == ((Position)obj).x)
+            && (this.y == ((Position)obj).y);
+    }
 
+    public float Distance(Position other) {
+        return MathF.Sqrt(MathF.Pow(x - other.x, 2) + MathF.Pow(y - other.y, 2));
+    }
+
+    public bool Follow(Position other) {
+        if (Distance(other) > 1.5) {
+            x += Math.Sign(other.x - x);
+            y += Math.Sign(other.y - y);
+            return true;
+        }
+        return false;
+    }
+}
     private Position[] knots;
 
     private HashSet<Tuple<int, int>> tailpos;
