@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 
+    private int currentScene = 1;
+
     private static GameManager _s;
 
     public static GameManager S {
@@ -21,6 +23,7 @@ public class GameManager : MonoBehaviour
 
     void Awake() {
         _s = this;
+        DontDestroyOnLoad(this.gameObject);
     }
 
     // Start is called before the first frame update
@@ -35,7 +38,28 @@ public class GameManager : MonoBehaviour
         
     }
 
+    public void PreviousScene() {
+        if (currentScene <= 1) {
+            SceneManager.LoadScene("MainMenu");
+        } else {
+            currentScene--;
+            LoadScene();
+        }
+    }
+
+    public void NextScene() {
+        if (currentScene >= 12) {
+            SceneManager.LoadScene("MainMenu");
+        } else {
+            currentScene++;
+            LoadScene();
+        }
+    }
+
     public void LoadScene() {
-        SceneManager.LoadScene("Day1");
+        SceneManager.LoadScene("Day" + currentScene);
+        if (currentScene != 0) {
+            SceneManager.LoadScene("GUI", LoadSceneMode.Additive);
+        }
     }
 }

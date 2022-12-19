@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 866389297}
   - component: {fileID: 866389296}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: SceneManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
