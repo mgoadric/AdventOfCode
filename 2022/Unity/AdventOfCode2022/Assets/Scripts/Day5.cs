@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using TMPro;
 using UnityEngine;
 
 public class Day5 : MonoBehaviour
@@ -11,7 +12,12 @@ public class Day5 : MonoBehaviour
    
     private bool sample = false;
 
+    public GameObject cratePrefab;
+
     private List<Tuple<int, int, int>> data;
+
+    public List<Stack<GameObject>> crateStacks = new List<Stack<GameObject>>();
+
 
 
 /*
@@ -98,6 +104,34 @@ public class Day5 : MonoBehaviour
         Debug.Log("Part 2: " + tops);
     }
 
+    IEnumerator Animate() {
+        for (int i = 0; i < starting.Length; i++) {
+            string initial = starting[i];
+            Stack<GameObject> s = new Stack<GameObject>();
+            char[] letters = initial.ToArray();
+            for (int j = 0; j < letters.Length; j++) {
+                GameObject go = Instantiate(cratePrefab, new Vector3(-4 + i, -3 + j, 0), Quaternion.identity);
+                go.transform.GetChild(0).GetComponent<TextMeshPro>().text = "" + letters[j];
+                s.Push(go);
+            }
+            //Debug.Log(s.Peek());
+            crateStacks.Add(s);
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        foreach (Tuple<int, int, int> instruction in data) {
+            for (int i = 0; i < instruction.Item1; i++) {
+                GameObject top = crateStacks[instruction.Item2 - 1].Pop();
+                top.transform.position = new Vector3(-4 + (instruction.Item3 - 1), -3 + crateStacks[instruction.Item3 - 1].Count, 0);
+                crateStacks[instruction.Item3 - 1].Push(top);
+                yield return new WaitForSeconds(.1f);
+            }
+        }
+
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -110,6 +144,8 @@ public class Day5 : MonoBehaviour
         PartOne();
 
         PartTwo();
+
+        StartCoroutine("Animate");
     }
 
     // Update is called once per frame
