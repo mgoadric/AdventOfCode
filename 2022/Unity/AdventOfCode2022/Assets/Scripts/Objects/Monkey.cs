@@ -39,6 +39,10 @@ public class Monkey {
         return s;
     }
 
+    public int NumItems() {
+        return items.Count;
+    }
+
     public int Inspections() {
         return inspectCount;
     }

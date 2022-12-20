@@ -7,6 +7,11 @@ public class Day11 : MonoBehaviour
 {
 
     public List<Monkey> monkeys = new List<Monkey>();
+    public GameObject[] monkeySprites = new GameObject[8];
+
+    private List<Queue<GameObject>> crateSprites = new List<Queue<GameObject>>();
+
+    public GameObject cratePrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -196,23 +201,44 @@ Monkey 7:
         m.Add(80);
         monkeys.Add(m);
 
-        for (int rounds = 1; rounds <= 20; rounds++) {
-            print("Round " + rounds);
+        for (int i = 0; i < monkeys.Count; i++) {
+            Monkey mon = monkeys[i];
+            crateSprites.Add(new Queue<GameObject>());
+            for (int j = 0; j < mon.NumItems(); j++) {
+                GameObject go = Instantiate(cratePrefab, 
+                    monkeySprites[i].transform.position + new Vector3(0, j * 0.2f, 0), 
+                    Quaternion.identity);
+                go.GetComponent<Thrown>().target = go.transform.position;
+                crateSprites[i].Enqueue(go);
+            }
+        }
+
+        StartCoroutine("ThrowThings");
+    }
+
+    IEnumerator ThrowThings() {
+        yield return new WaitForSeconds(1f);
+        while (true) {
+            //print("Round " + rounds);
             for (int i = 0; i < monkeys.Count; i++) {
                 Monkey mon = monkeys[i];
                 // print("Monkey " + i + ":");
                 while (mon.HasItems()) {
                     Tuple<long, int> result = mon.Inspect();
                     monkeys[result.Item2].Add(result.Item1);
+                    GameObject c = crateSprites[i].Dequeue();
+                    c.GetComponent<Thrown>().target = monkeySprites[result.Item2].transform.position + new Vector3(0, crateSprites[result.Item2].Count * 0.2f, 0);
+                    crateSprites[result.Item2].Enqueue(c);
+                    yield return new WaitForSeconds(0.1f);
                 }
             }
             for (int i = 0; i < monkeys.Count; i++) {
                 Monkey mon = monkeys[i];
-                print("Monkey " + i + " has " + mon.MyItems());
+                //print("Monkey " + i + " has " + mon.MyItems());
             }
             for (int i = 0; i < monkeys.Count; i++) {
                 Monkey mon = monkeys[i];
-                print("Monkey " + i + " inspected " + mon.Inspections());
+                //print("Monkey " + i + " inspected " + mon.Inspections());
             }
         }
     }
