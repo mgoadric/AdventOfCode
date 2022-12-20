@@ -16,6 +16,16 @@ public class Day1 : MonoBehaviour
     public GameObject elfPrefab;
     public GameObject backpackPrefab;
 
+    private void LoadData(string filename) {
+
+        //Read the text from directly from the input.txt file
+        StreamReader reader = new StreamReader(filename); 
+        ParseInput(reader.ReadToEnd());
+        reader.Close();
+
+        Debug.Log(data.Count());
+    }
+
     IEnumerator GetText() {
         UnityWebRequest www = UnityWebRequest.Get("https://raw.githubusercontent.com/mgoadric/AdventOfCode/main/2022/Unity/AdventOfCode2022/Assets/Data/input1.txt");
         yield return www.SendWebRequest();
@@ -39,16 +49,6 @@ public class Day1 : MonoBehaviour
         }
     }
 
-    private void LoadData(string filename) {
-
-        //Read the text from directly from the input.txt file
-        StreamReader reader = new StreamReader(filename); 
-        ParseInput(reader.ReadToEnd());
-        reader.Close();
-
-        Debug.Log(data.Count());
-    }
-
     private void ParseInput(string input) {
         data = input.Split("\n\n").Select(
             line => line.Split("\n").Select(s => Int32.Parse(s)).ToList()).ToList();
@@ -57,21 +57,7 @@ public class Day1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        /*
-        string path = "Assets/Data/";
-        if (sample) {
-            path += "sample";
-        }
-        LoadData(path + "input1.txt");
-        
-        foreach (List<int> backpack in data) {
-            Debug.Log(backpack.Sum());
-        }
-        
-        StartCoroutine("SpawnElf");
-        */
         StartCoroutine("GetText");
-
     }
 
     IEnumerator SpawnElf()

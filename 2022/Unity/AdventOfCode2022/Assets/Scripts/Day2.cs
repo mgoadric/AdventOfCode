@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class Day2 : MonoBehaviour
 {
@@ -28,6 +29,46 @@ public class Day2 : MonoBehaviour
 
     private Queue<ElfMovement> elves;
 
+    IEnumerator GetText() {
+        UnityWebRequest www = UnityWebRequest.Get("https://raw.githubusercontent.com/mgoadric/AdventOfCode/main/2022/Unity/AdventOfCode2022/Assets/Data/input2.txt");
+        yield return www.SendWebRequest();
+ 
+        if (www.result != UnityWebRequest.Result.Success) {
+            Debug.Log(www.error);
+        }
+        else {
+            // Show results as text
+            Debug.Log(www.downloadHandler.text);
+            ParseInput(www.downloadHandler.text);
+            Debug.Log(data.Count());
+
+            int startX = 0;
+            foreach (List<string> game in data) {
+                //Debug.Log(gameScores[new Tuple<string, string>(game[0], game[1])]);
+                GameObject go = Instantiate(elfPrefab, new Vector3(startX, 1, 0), Quaternion.identity);
+                ElfMovement move = go.GetComponent<ElfMovement>();
+                elves.Enqueue(move);
+                move.target = new Vector3(startX, 1, 0);
+                startX--;
+            }
+
+            int sum = data.Select(game => moveScores[moveMap[game[1]]] + gameScores[new Tuple<string, string>(game[0], moveMap[game[1]])]).Sum();
+            Debug.Log("Part 1 Total = " + sum);
+
+            int sum2 = data.Select(game => moveScores[moveLookup[new Tuple<string, string>(game[0], game[1])]] + 
+            gameScores[new Tuple<string, string>(game[0], moveLookup[new Tuple<string, string>(game[0], game[1])])]).Sum();
+            Debug.Log("Part 2 Total = " + sum2);
+
+            StartCoroutine("PlayGames");
+        }
+    }
+
+    private void ParseInput(string input) {
+        data = input.Split("\n").Select(
+            elf => elf.Split(" ").ToList()).ToList();
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,19 +76,6 @@ public class Day2 : MonoBehaviour
         elves = new Queue<ElfMovement>();
         elfRPS.SetActive(false);
         myRPS.SetActive(false);
-
-        string path = "Assets/Data/input2.txt";
-
-        //Read the text from directly from the file
-        StreamReader reader = new StreamReader(path); 
-        data = reader.ReadToEnd().Split("\n").Select(
-            elf => elf.Split(" ").ToList()).ToList();
-
-        Debug.Log(data.Count());
-        foreach (List<string> game in data) {
-            //Debug.Log(game[0] + " -> " + game[1]);
-        }
-        reader.Close();
 
         // https://stackoverflow.com/questions/1273139/c-sharp-java-hashmap-equivalent
         moveMap["X"] = "A";
@@ -68,10 +96,6 @@ public class Day2 : MonoBehaviour
         moveScores["B"] = 2;
         moveScores["C"] = 3;
 
-        foreach (List<string> game in data) {
-            //Debug.Log(moveScores[moveLookup[new Tuple<string, string>(game[0], game[1])]]);
-        }
-
         // https://stackoverflow.com/questions/723211/quick-way-to-create-a-list-of-values-in-c
         gameScores[new Tuple<string, string>("A", "A")] = 3;
         gameScores[new Tuple<string, string>("B", "B")] = 3;
@@ -83,24 +107,7 @@ public class Day2 : MonoBehaviour
         gameScores[new Tuple<string, string>("B", "A")] = 0;
         gameScores[new Tuple<string, string>("C", "B")] = 0;
 
-        int startX = 0;
-        foreach (List<string> game in data) {
-            //Debug.Log(gameScores[new Tuple<string, string>(game[0], game[1])]);
-            GameObject go = Instantiate(elfPrefab, new Vector3(startX, 1, 0), Quaternion.identity);
-            ElfMovement move = go.GetComponent<ElfMovement>();
-            elves.Enqueue(move);
-            move.target = new Vector3(startX, 1, 0);
-            startX--;
-        }
-
-        int sum = data.Select(game => moveScores[moveMap[game[1]]] + gameScores[new Tuple<string, string>(game[0], moveMap[game[1]])]).Sum();
-        Debug.Log("Part 1 Total = " + sum);
-
-        int sum2 = data.Select(game => moveScores[moveLookup[new Tuple<string, string>(game[0], game[1])]] + 
-        gameScores[new Tuple<string, string>(game[0], moveLookup[new Tuple<string, string>(game[0], game[1])])]).Sum();
-        Debug.Log("Part 2 Total = " + sum2);
-
-        StartCoroutine("PlayGames");
+        StartCoroutine("GetText");
 
     }
 
