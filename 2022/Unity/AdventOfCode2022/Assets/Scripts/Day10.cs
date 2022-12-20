@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class Day10 : MonoBehaviour
@@ -32,15 +33,30 @@ public class Day10 : MonoBehaviour
 
     }
 
+    IEnumerator GetText() {
+        UnityWebRequest www = UnityWebRequest.Get("https://raw.githubusercontent.com/mgoadric/AdventOfCode/main/2022/Unity/AdventOfCode2022/Assets/Data/input10.txt");
+        yield return www.SendWebRequest();
+ 
+        if (www.result != UnityWebRequest.Result.Success) {
+            Debug.Log(www.error);
+        }
+        else {
+            // Show results as text
+            Debug.Log(www.downloadHandler.text);
+            ParseInput(www.downloadHandler.text);
+
+            StartCoroutine("DrawScreen");
+        }
+    }
+
+    private void ParseInput(string input) {
+        data = input.Split("\n").ToList();
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
-        string path = "Assets/Data/";
-        if (sample) {
-            path += "sample";
-        }
-        LoadData(path + "input10.txt");
-
         for(int i = 0; i < 40; i++) {
             for (int j = 0; j < 6; j++) {
                 screen[i,j] = Instantiate(pixelPrefab, new Vector3(0.3f * (i - 20), 0.3f * (3 - j), 0), Quaternion.identity);
@@ -48,7 +64,7 @@ public class Day10 : MonoBehaviour
             }
         }
 
-        StartCoroutine("DrawScreen");
+        StartCoroutine("GetText");
 
     }
 

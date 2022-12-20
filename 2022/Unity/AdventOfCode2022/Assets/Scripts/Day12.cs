@@ -37,9 +37,6 @@ public class Day12 : MonoBehaviour
                     // Make end here
                     //end.transform.position = new Vector3(4 * j, 60, 4 * i);
                     print("End at " + j + ", " + i);
-                    
-                    NavMeshAgent agent = start.GetComponent<NavMeshAgent>();
-                    agent.destination = end.transform.position; 
 
                     letters[j] = (char)('z' + 1);
                 }
@@ -54,10 +51,15 @@ public class Day12 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        /*
         string path = "Assets/Data/input12.txt";
         LoadData(path);
         Terrain ter = terrain.GetComponent<Terrain>();
         ter.terrainData.SetHeights(0, 0, worldmap);
+        */
+
+        NavMeshAgent agent = start.GetComponent<NavMeshAgent>();
+        agent.destination = end.transform.position; 
     }
 
     // Update is called once per frame
