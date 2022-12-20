@@ -27,7 +27,7 @@ public class ElfMovement : MonoBehaviour
         start = transform.position;
         // https://forum.unity.com/threads/get-angle-in-degress-between-two-vectors.929190/
         float angle = Mathf.Rad2Deg * (Mathf.Atan2(target.y - transform.position.y, target.x - transform.position.x));
-         print(angle);
+        print(angle);
         myanim.SetFloat("angle", angle);
         myanim.SetBool("moving", true);
         myanim.SetTrigger("start");
@@ -42,7 +42,11 @@ public class ElfMovement : MonoBehaviour
     void Start()
     {
         myanim = GetComponent<Animator>();
-        BeginJourney();
+        if (transform.position != target) {
+            BeginJourney();
+        } else {
+            previousTarget = target;
+        }
     }
 
     // Move to the target end position.
@@ -60,7 +64,9 @@ public class ElfMovement : MonoBehaviour
             float fractionOfJourney = distCovered / journeyLength;
 
             // Set our position as a fraction of the distance between the markers.
-            transform.position = Vector3.Lerp(start, target, fractionOfJourney);
+            if (journeyLength != 0) {
+                transform.position = Vector3.Lerp(start, target, fractionOfJourney);
+            }
 
             if ((transform.position - target).magnitude < 0.001) {
                 transform.position = target;
