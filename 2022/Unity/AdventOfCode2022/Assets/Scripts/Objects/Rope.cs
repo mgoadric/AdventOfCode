@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Rope {
 
-private class Position {
+public class Position {
     public int x; 
     public int y;
 
@@ -45,7 +45,7 @@ private class Position {
         return false;
     }
 }
-    private Position[] knots;
+    public Position[] knots;
 
     private HashSet<Tuple<int, int>> tailpos;
 

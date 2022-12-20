@@ -78,7 +78,7 @@ public class Day1 : MonoBehaviour
     {
         float x = -6.5f;
         float y = -3.5f;
-        UnityEngine.Random.seed = 1;
+        UnityEngine.Random.InitState(1);
         foreach(List<int> backpack in data) 
         {
             float startX = UnityEngine.Random.Range(-6, 6);
