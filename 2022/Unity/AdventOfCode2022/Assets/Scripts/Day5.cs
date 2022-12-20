@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class Day5 : MonoBehaviour
 {
@@ -57,6 +58,42 @@ public class Day5 : MonoBehaviour
 
         Debug.Log(data.Count());
     }
+
+
+    IEnumerator GetText() {
+        UnityWebRequest www = UnityWebRequest.Get("https://raw.githubusercontent.com/mgoadric/AdventOfCode/main/2022/Unity/AdventOfCode2022/Assets/Data/input5.txt");
+        yield return www.SendWebRequest();
+ 
+        if (www.result != UnityWebRequest.Result.Success) {
+            Debug.Log(www.error);
+        }
+        else {
+            // Show results as text
+            Debug.Log(www.downloadHandler.text);
+            ParseInput(www.downloadHandler.text);
+
+            StartCoroutine("Animate");
+        }
+    }
+
+    private void ParseInput(string input) {
+        List<string> lines = input.Split("\n").ToList();
+
+        data = new List<Tuple<int, int, int>>();
+        // https://learn.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.match.groups?view=net-7.0
+        string pat = @"move (\d+) from (\d+) to (\d+)";
+        foreach (string line in lines) {
+            Regex r = new Regex(pat, RegexOptions.IgnoreCase);
+            Match m = r.Match(line);
+            //Debug.Log(m.Groups[1].Value + ", " + m.Groups[2].Value + ", " + m.Groups[3].Value);
+            data.Add(new Tuple<int, int, int>(int.Parse(m.Groups[1].Value), 
+                int.Parse(m.Groups[2].Value), 
+                int.Parse(m.Groups[3].Value)));
+        }
+
+        Debug.Log(data.Count());
+    }
+
 
     private void PartOne() {
         List<Stack<char>> stacks = new List<Stack<char>>();
@@ -139,17 +176,12 @@ public class Day5 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        string path = "Assets/Data/";
-        if (sample) {
-            path += "sample";
-        }
-        LoadData(path + "input5.txt");
         
-        PartOne();
+        //PartOne();
 
-        PartTwo();
+        //PartTwo();
 
-        StartCoroutine("Animate");
+        StartCoroutine("GetText");
     }
 
     // Update is called once per frame
