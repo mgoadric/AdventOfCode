@@ -132,6 +132,10 @@ public class Day5 : MonoBehaviour
 
     }
 
+    public int TallestStack() {
+        return crateStacks.Select(s => s.Count).Max();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
