@@ -74,8 +74,8 @@ public class Day2 : MonoBehaviour
     {
 
         elves = new Queue<ElfMovement>();
-        elfRPS.SetActive(false);
-        myRPS.SetActive(false);
+        //elfRPS.SetActive(false);
+        //myRPS.SetActive(false);
 
         // https://stackoverflow.com/questions/1273139/c-sharp-java-hashmap-equivalent
         moveMap["X"] = "A";
@@ -126,9 +126,11 @@ public class Day2 : MonoBehaviour
         foreach (List<string> game in data) {
             //Debug.Log(gameScores[new Tuple<string, string>(game[0], game[1])]);
 
+            print("Setting up prefabs");
             ShowRPS(game[0], elfRPS);
             ShowRPS(moveLookup[new Tuple<string, string>(game[0], game[1])], myRPS);
 
+            print(moveLookup[new Tuple<string, string>(game[0], game[1])]);
             elfRPS.SetActive(true);
             myRPS.SetActive(true);
             yield return new WaitForSeconds(1f);
