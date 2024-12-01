@@ -38,9 +38,6 @@ public class Day1 : MonoBehaviour
             Debug.Log(www.downloadHandler.text);
             ParseInput(www.downloadHandler.text);
  
-            // Or retrieve results as binary data
-            //byte[] results = www.downloadHandler.data;
-
             foreach (List<int> backpack in data) {
                 Debug.Log(backpack.Sum());
             }
