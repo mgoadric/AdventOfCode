@@ -47,5 +47,5 @@ func part1() int {
 }
 
 func main() {
-	fmt.Println("Part 1 answer: " + string(part1()))
+	fmt.Println("Part 1 answer: " + strconv.Itoa(part1()))
 }
