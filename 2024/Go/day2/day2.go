@@ -55,6 +55,9 @@ func safe(r []int) bool {
 	d := true
 	g := true
 	for i := range r {
+		if !a && !d {
+			break
+		}
 		if i > 0 {
 			a = a && asc(r[i-1], r[i])
 			d = d && desc(r[i-1], r[i])
@@ -63,6 +66,18 @@ func safe(r []int) bool {
 	}
 	return g && (a || d)
 
+}
+
+func shrink(r []int, i int) []int {
+	t := make([]int, len(r)-1)
+	for j := range len(r) {
+		if j < i {
+			t[j] = r[j]
+		} else if j > i {
+			t[j-1] = r[j]
+		}
+	}
+	return t
 }
 
 func part1() int {
@@ -87,14 +102,7 @@ func part2() int {
 			if s {
 				break
 			}
-			t := make([]int, len(r)-1)
-			for j := range len(r) {
-				if j < i {
-					t[j] = r[j]
-				} else if j > i {
-					t[j-1] = r[j]
-				}
-			}
+			t := shrink(r, i)
 			s = s || safe(t)
 		}
 		if s {
