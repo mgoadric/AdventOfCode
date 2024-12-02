@@ -5,6 +5,7 @@ import (
 	"os"
 	"slices"
 	"strconv"
+	"time"
 )
 
 func check(e error) {
@@ -71,6 +72,13 @@ func part2() int {
 }
 
 func main() {
+	start := time.Now()
 	fmt.Println("Part 1 answer: " + strconv.Itoa(part1()))
+	elapsed := time.Since(start)
+	fmt.Printf("took %s\n", elapsed)
+
+	start = time.Now()
 	fmt.Println("Part 2 answer: " + strconv.Itoa(part2()))
+	elapsed = time.Since(start)
+	fmt.Printf("took %s\n", elapsed)
 }
