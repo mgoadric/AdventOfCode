@@ -50,22 +50,27 @@ func gradual(a int, b int) bool {
 	return x >= 1 && x <= 3
 }
 
+func safe(r []int) bool {
+	a := true
+	d := true
+	g := true
+	for i := range r {
+		if i > 0 {
+			a = a && asc(r[i-1], r[i])
+			d = d && desc(r[i-1], r[i])
+			g = g && gradual(r[i-1], r[i])
+		}
+	}
+	return g && (a || d)
+
+}
+
 func part1() int {
 	reports := parsing()
 
 	total := 0
 	for _, r := range reports {
-		a := true
-		d := true
-		g := true
-		for i, _ := range r {
-			if i > 0 {
-				a = a && asc(r[i-1], r[i])
-				d = d && desc(r[i-1], r[i])
-				g = g && gradual(r[i-1], r[i])
-			}
-		}
-		if g && (a || d) {
+		if safe(r) {
 			total++
 		}
 	}
@@ -73,10 +78,29 @@ func part1() int {
 }
 
 func part2() int {
-	//reports := parsing()
+	reports := parsing()
 
 	total := 0
-
+	for _, r := range reports {
+		s := safe(r)
+		for i := range r {
+			if s {
+				break
+			}
+			t := make([]int, len(r)-1)
+			for j := range len(r) {
+				if j < i {
+					t[j] = r[j]
+				} else if j > i {
+					t[j-1] = r[j]
+				}
+			}
+			s = s || safe(t)
+		}
+		if s {
+			total++
+		}
+	}
 	return total
 }
 
