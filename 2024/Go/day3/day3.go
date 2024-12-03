@@ -25,7 +25,9 @@ func parsing() []byte {
 func part1() int {
 	data := parsing()
 
-	r, _ := regexp.Compile("mul[(]([0-9]+),([0-9]+)[)]")
+	r, err := regexp.Compile("mul[(]([0-9]+),([0-9]+)[)]")
+	check(err)
+
 	match := r.FindAllSubmatch(data, -1)
 
 	total := 0
@@ -42,14 +44,20 @@ func part1() int {
 func part2() int {
 	data := parsing()
 
-	r, _ := regexp.Compile("mul[(]([0-9]+),([0-9]+)[)]")
+	r, err := regexp.Compile("mul[(]([0-9]+),([0-9]+)[)]")
+	check(err)
+
 	match := r.FindAllSubmatch(data, -1)
 	matchi := r.FindAllIndex(data, -1)
 
-	d, _ := regexp.Compile("do[(][)]")
+	d, err := regexp.Compile("do[(][)]")
+	check(err)
+
 	dmatchi := d.FindAllIndex(data, -1)
 
-	n, _ := regexp.Compile(regexp.QuoteMeta("don't") + "[(][)]")
+	n, err := regexp.Compile(regexp.QuoteMeta("don't") + "[(][)]")
+	check(err)
+
 	nmatchi := n.FindAllIndex(data, -1)
 
 	basket := make(map[int]int)
@@ -62,7 +70,6 @@ func part2() int {
 	for _, m := range nmatchi {
 		basket[m[0]] = -2
 	}
-	fmt.Println(len(basket))
 
 	// https://www.geeksforgeeks.org/how-to-sort-golang-map-by-keys-or-values/
 	keys := make([]int, 0, len(basket))
@@ -75,7 +82,6 @@ func part2() int {
 	total := 0
 	enabled := true
 	for _, k := range keys {
-		fmt.Println(k, basket[k])
 		if basket[k] == -1 {
 			enabled = true
 		} else if basket[k] == -2 {
