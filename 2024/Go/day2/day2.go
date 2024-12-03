@@ -115,12 +115,12 @@ func part2() int {
 
 func main() {
 	start := time.Now()
-	fmt.Println("Part 1 answer: " + strconv.Itoa(part1()))
+	fmt.Printf("Part 1 answer: %d\n", part1())
 	elapsed := time.Since(start)
 	fmt.Printf("took %s\n", elapsed)
 
 	start = time.Now()
-	fmt.Println("Part 2 answer: " + strconv.Itoa(part2()))
+	fmt.Printf("Part 2 answer: %d\n", part2())
 	elapsed = time.Since(start)
 	fmt.Printf("took %s\n", elapsed)
 }
