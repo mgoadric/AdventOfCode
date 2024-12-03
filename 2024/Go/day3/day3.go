@@ -25,7 +25,7 @@ func parsing() []byte {
 func part1() int {
 	data := parsing()
 
-	r, err := regexp.Compile("mul[(]([0-9]+),([0-9]+)[)]")
+	r, err := regexp.Compile(`mul\((\d+),(\d+)\)`)
 	check(err)
 
 	match := r.FindAllSubmatch(data, -1)
@@ -44,18 +44,18 @@ func part1() int {
 func part2() int {
 	data := parsing()
 
-	r, err := regexp.Compile("mul[(]([0-9]+),([0-9]+)[)]")
+	r, err := regexp.Compile(`mul\((\d+),(\d+)\)`)
 	check(err)
 
 	match := r.FindAllSubmatch(data, -1)
 	matchi := r.FindAllIndex(data, -1)
 
-	d, err := regexp.Compile("do[(][)]")
+	d, err := regexp.Compile(`do\(\)`)
 	check(err)
 
 	dmatchi := d.FindAllIndex(data, -1)
 
-	n, err := regexp.Compile(regexp.QuoteMeta("don't") + "[(][)]")
+	n, err := regexp.Compile(`don\'t\(\)`)
 	check(err)
 
 	nmatchi := n.FindAllIndex(data, -1)
