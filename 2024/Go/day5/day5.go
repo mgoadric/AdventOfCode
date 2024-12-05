@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -13,16 +14,45 @@ func check(e error) {
 	}
 }
 
-func parsing() []string {
+func parsing() (map[int][]int, [][]int) {
 	dat, err := os.ReadFile("../../day/5/input.txt")
 	check(err)
 
-	return strings.Split(string(dat), "\n")
+	temp := strings.Split(string(dat), "\n\n")
+
+	os := strings.Split(temp[0], "\n")
+	orderings := make(map[int][]int)
+	for _, order := range os {
+		pages := strings.Split(order, "|")
+		fmt.Println(pages)
+	}
+
+	us := strings.Split(temp[1], "\n")
+	updates := make([][]int, 0)
+	for _, s := range us {
+		if len(s) == 0 {
+			break
+		}
+		b := make([]int, 0)
+		ps := strings.Split(s, ",")
+		for _, p := range ps {
+			page, err := strconv.Atoi(p)
+			check(err)
+			b = append(b, page)
+		}
+
+		updates = append(updates, b)
+	}
+
+	return orderings, updates
+
 }
 
 func part1() int {
-	//data := parsing()
+	orders, updates := parsing()
+	fmt.Println(orders)
 
+	fmt.Println(updates[(len(updates) - 1)])
 	total := 0
 
 	for {
