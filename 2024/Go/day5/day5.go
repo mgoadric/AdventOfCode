@@ -14,17 +14,26 @@ func check(e error) {
 	}
 }
 
-func parsing() (map[int][]int, [][]int) {
+func parsing() (map[int]map[int]bool, [][]int) {
 	dat, err := os.ReadFile("../../day/5/input.txt")
 	check(err)
 
 	temp := strings.Split(string(dat), "\n\n")
 
 	os := strings.Split(temp[0], "\n")
-	orderings := make(map[int][]int)
+	orderings := make(map[int]map[int]bool)
 	for _, order := range os {
 		pages := strings.Split(order, "|")
-		fmt.Println(pages)
+		before, err := strconv.Atoi(pages[0])
+		check(err)
+		after, err := strconv.Atoi(pages[1])
+		check(err)
+		afters, found := orderings[before]
+		if !found {
+			afters = make(map[int]bool)
+			orderings[before] = afters
+		}
+		afters[after] = true
 	}
 
 	us := strings.Split(temp[1], "\n")
@@ -49,14 +58,30 @@ func parsing() (map[int][]int, [][]int) {
 }
 
 func part1() int {
-	orders, updates := parsing()
-	fmt.Println(orders)
+	orderings, updates := parsing()
+	for k := range orderings {
+		fmt.Println(k)
+	}
 
-	fmt.Println(updates[(len(updates) - 1)])
 	total := 0
 
-	for {
-		break
+	for _, u := range updates {
+		correct := true
+		for i := len(u) - 1; i >= 0; i-- {
+			for j := 0; j < i; j++ {
+				t, ok := orderings[u[i]]
+				if ok {
+					if t[u[j]] {
+						correct = false
+						fmt.Println("Aha!")
+						break
+					}
+				}
+			}
+		}
+		if correct {
+			total += u[len(u)/2]
+		}
 	}
 
 	return total
