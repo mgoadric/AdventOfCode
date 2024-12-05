@@ -57,12 +57,9 @@ func parsing() (map[int]map[int]bool, [][]int) {
 
 }
 
-func part1() int {
-	orderings, updates := parsing()
-
-	total := 0
-
-	for _, u := range updates {
+func worker(id int, jobs <-chan []int, results chan<- int) {
+	for u := range jobs {
+		//fmt.Println("worker", id, "started  job", u)
 		correct := true
 		for i := 0; i < len(u); i++ {
 			for j := 0; j < i; j++ {
@@ -77,15 +74,41 @@ func part1() int {
 			}
 		}
 		if correct {
-			total += u[len(u)/2]
+			results <- u[len(u)/2]
+		} else {
+			results <- 0
 		}
+		//fmt.Println("worker", id, "finished job")
+	}
+}
+
+var orderings, updates = parsing()
+
+func part1() int {
+
+	jobs := make(chan []int, len(updates))
+	results := make(chan int, len(updates))
+
+	total := 0
+
+	for w := 1; w <= 20; w++ {
+		go worker(w, jobs, results)
+	}
+
+	for _, u := range updates {
+		jobs <- u
+	}
+
+	close(jobs)
+
+	for a := 1; a <= len(updates); a++ {
+		total += <-results
 	}
 
 	return total
 }
 
 func part2() int {
-	orderings, updates := parsing()
 
 	total := 0
 
