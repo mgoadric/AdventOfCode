@@ -57,9 +57,8 @@ func parsing() (map[int]map[int]bool, [][]int) {
 
 }
 
-func worker(id int, jobs <-chan []int, results chan<- int) {
+func worker(jobs <-chan []int, results chan<- int) {
 	for u := range jobs {
-		//fmt.Println("worker", id, "started  job", u)
 		correct := true
 		for i := 0; i < len(u); i++ {
 			for j := 0; j < i; j++ {
@@ -78,7 +77,6 @@ func worker(id int, jobs <-chan []int, results chan<- int) {
 		} else {
 			results <- 0
 		}
-		//fmt.Println("worker", id, "finished job")
 	}
 }
 
@@ -92,7 +90,7 @@ func part1() int {
 	total := 0
 
 	for w := 1; w <= 20; w++ {
-		go worker(w, jobs, results)
+		go worker(jobs, results)
 	}
 
 	for _, u := range updates {
