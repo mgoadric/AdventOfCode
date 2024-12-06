@@ -34,11 +34,14 @@ func part1() int {
 	height := len(grid)
 	width := len(grid[0])
 	guard := point{x: -1, y: -1}
-	dirs := []point{
-		{x: -1, y: 0},
-		{x: 0, y: 1},
-		{x: 1, y: 0},
-		{x: 0, y: -1},
+	dirs := map[rune]point{
+		'^': {x: -1, y: 0},
+		'>': {x: 0, y: 1},
+		'v': {x: 1, y: 0},
+		'<': {x: 0, y: -1},
+	}
+	dnext := []rune{
+		'^', '>', 'v', '<',
 	}
 	d := 0
 
@@ -47,7 +50,6 @@ func part1() int {
 		found := false
 		for j := range width {
 			if grid[i][j] == '^' {
-				grid[i][j] = 'X'
 				guard.x = i
 				guard.y = j
 				found = true
@@ -62,8 +64,9 @@ func part1() int {
 	total := 1
 
 	for {
+		// Bumping into objects
 		for {
-			next := point{x: guard.x + dirs[d].x, y: guard.y + dirs[d].y}
+			next := point{x: guard.x + dirs[dnext[d]].x, y: guard.y + dirs[dnext[d]].y}
 			if next.x >= height || next.y >= width || next.x < 0 || next.y < 0 {
 				guard = next
 				break
@@ -76,12 +79,16 @@ func part1() int {
 				break
 			}
 		}
-		fmt.Println(guard)
+
+		// Out of bounds? Stop!
 		if guard.x >= height || guard.y >= width || guard.x < 0 || guard.y < 0 {
 			break
 		}
-		if grid[guard.x][guard.y] != 'X' {
-			grid[guard.x][guard.y] = 'X'
+
+		// Is this somewhere new?
+		_, ok := dirs[rune(grid[guard.x][guard.y])]
+		if !ok {
+			grid[guard.x][guard.y] = byte(dnext[d])
 			total++
 		}
 	}
