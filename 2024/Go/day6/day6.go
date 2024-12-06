@@ -13,42 +13,19 @@ func check(e error) {
 	}
 }
 
-func parsing() [][]byte {
+func parsing() ([][]byte, point) {
 	dat, err := os.ReadFile("../../day/6/input.txt")
 	check(err)
 
 	grid := bytes.Split(dat, []byte("\n"))
-	return grid[:len(grid)-1]
+	grid = grid[:len(grid)-1]
 
-}
-
-type point struct {
-	x int
-	y int
-}
-
-func part1() int {
-
-	grid := parsing()
-
-	height := len(grid)
-	width := len(grid[0])
 	guard := point{x: -1, y: -1}
-	dirs := map[rune]point{
-		'^': {x: -1, y: 0},
-		'>': {x: 0, y: 1},
-		'v': {x: 1, y: 0},
-		'<': {x: 0, y: -1},
-	}
-	dnext := []rune{
-		'^', '>', 'v', '<',
-	}
-	d := 0
 
-	for i := range height {
+	for i := range len(grid) {
 		//fmt.Println(grid[i])
 		found := false
-		for j := range width {
+		for j := range len(grid[i]) {
 			if grid[i][j] == '^' {
 				guard.x = i
 				guard.y = j
@@ -60,7 +37,35 @@ func part1() int {
 			break
 		}
 	}
+	return grid, guard
+}
 
+func gridPrint(grid [][]byte) {
+	for i := range len(grid) {
+		fmt.Println(string(grid[i]))
+	}
+}
+
+type point struct {
+	x int
+	y int
+}
+
+var dirs = map[rune]point{
+	'^': {x: -1, y: 0},
+	'>': {x: 0, y: 1},
+	'v': {x: 1, y: 0},
+	'<': {x: 0, y: -1},
+}
+var dnext = []rune{
+	'^', '>', 'v', '<',
+}
+
+func patrol(grid [][]byte, guard point) int {
+	height := len(grid)
+	width := len(grid[0])
+
+	d := 0
 	total := 1
 
 	for {
@@ -90,20 +95,47 @@ func part1() int {
 		if !ok {
 			grid[guard.x][guard.y] = byte(dnext[d])
 			total++
+		} else {
+			if rune(grid[guard.x][guard.y]) == dnext[d] {
+				total = -1
+				break
+			}
 		}
 	}
-
 	return total
+}
+
+func part1() int {
+
+	grid, guard := parsing()
+	return patrol(grid, guard)
 }
 
 func part2() int {
 
-	//grid := parsing()
+	grid, guard := parsing()
 
 	total := 0
 
-	for {
-		break
+	for i := range len(grid) {
+		for j := range len(grid[i]) {
+			mygrid := make([][]byte, len(grid))
+			for a := range len(grid) {
+				row := make([]byte, len(grid[i]))
+				for b := range len(grid[a]) {
+					row[b] = grid[a][b]
+				}
+				mygrid[a] = row
+			}
+			gpos := point{x: guard.x, y: guard.y}
+
+			if gpos.x != i || gpos.y != j {
+				mygrid[i][j] = '#'
+				if patrol(mygrid, gpos) == -1 {
+					total++
+				}
+			}
+		}
 	}
 
 	return total
