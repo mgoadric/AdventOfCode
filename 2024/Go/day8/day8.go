@@ -67,7 +67,6 @@ func (p point) less(p2 point) bool {
 
 func part1() int {
 	stations, dim := parsing()
-	//fmt.Println(stations, dim)
 
 	nodes := make(map[point]bool)
 	for s := range stations {
@@ -82,12 +81,10 @@ func part1() int {
 				diff := a.sub(b)
 				first := a.add(diff)
 				if first.inRange(dim) {
-					//fmt.Println(first)
 					nodes[first] = true
 				}
 				second := b.add(diff.inv())
 				if second.inRange(dim) {
-					//fmt.Println(second)
 					nodes[second] = true
 				}
 			}
@@ -98,10 +95,43 @@ func part1() int {
 }
 
 func part2() int {
-	//data := parsing()
-	total := 0
+	stations, dim := parsing()
 
-	return total
+	nodes := make(map[point]bool)
+	for s := range stations {
+		for i := range len(stations[s]) {
+			for j := i + 1; j < len(stations[s]); j++ {
+				a := stations[s][i]
+				b := stations[s][j]
+				if b.less(a) {
+					a, b = b, a
+				}
+
+				diff := a.sub(b)
+				for {
+					if a.inRange(dim) {
+						//fmt.Println(a)
+						nodes[a] = true
+						a = a.add(diff)
+					} else {
+						break
+					}
+				}
+
+				for {
+					if b.inRange(dim) {
+						//fmt.Println(b)
+						nodes[b] = true
+						b = b.add(diff.inv())
+					} else {
+						break
+					}
+				}
+			}
+		}
+	}
+
+	return len(nodes)
 }
 
 func main() {
