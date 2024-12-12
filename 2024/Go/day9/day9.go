@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"slices"
 	"time"
 )
 
@@ -101,7 +102,7 @@ func part1() int {
 		}
 
 		// Fill in spaces
-		e := data[len(data)-1]
+		e := &data[len(data)-1]
 		//fmt.Println("d:", d)
 		//fmt.Println("e:", e)
 		used := 0
@@ -110,17 +111,17 @@ func part1() int {
 				break
 			}
 			if spaces[0] < e.len {
-				data[len(data)-1].len -= spaces[0]
+				e.len -= spaces[0]
 				t := chunk{i: d.i + d.len + used, id: e.id, len: spaces[0]}
 				total += calc(t)
 				break
 			} else {
 				spaces[0] -= e.len
 				e.i = d.i + d.len + used
-				total += calc(e)
+				total += calc(*e)
 				used += e.len
 				data = data[:len(data)-1]
-				e = data[len(data)-1]
+				e = &data[len(data)-1]
 			}
 		}
 		spaces = spaces[1:]
@@ -132,48 +133,28 @@ func part1() int {
 func part2() int {
 	data := parsing2()
 
-	//fmt.Println(data)
-	total := 0
-	for {
-		//fmt.Println(data)
-
-		// Process data chunk
-		if len(data) == 0 {
-			break
-		}
-		d := data[0]
-		total += calc(d)
-		data = data[1:]
-
-		if len(data) == 0 {
-			break
-		}
-
-		used := 0
-		for {
-			if len(data) == 0 {
+	//fmt.Println("a b", data)
+	for i := len(data) - 1; i >= 1; i-- {
+		e := &data[i]
+		for j := 0; j < i; j++ {
+			d := &data[j]
+			if d.space >= e.len {
+				e.space = d.space - e.len
+				d.space = 0
+				e.i = d.i + d.len
+				// Move E
+				data = slices.Insert(data, j+1, *e)
+				data = slices.Delete(data, i+1, i+2)
+				//fmt.Println(i, j, data)
+				i++
 				break
-			} else {
-				e := data[len(data)-1]
-				// Fill in spaces
-				//fmt.Println("d:", d)
-				//fmt.Println("e:", e)
-
-				if d.space < e.len {
-					data[len(data)-1].len -= d.space
-					t := chunk{i: d.i + d.len + used, id: e.id, len: d.space}
-					total += calc(t)
-					break
-				} else {
-					d.space -= e.len
-					e.i = d.i + d.len + used
-					total += calc(e)
-					used += e.len
-					data = data[:len(data)-1]
-				}
 			}
 		}
+	}
 
+	total := 0
+	for _, c := range data {
+		total += calc(c)
 	}
 	return total
 }
