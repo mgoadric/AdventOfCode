@@ -64,30 +64,40 @@ func part2() int {
 	//fmt.Println(0, stones)
 
 	// put in dictionary??
+	d := make(map[int]int)
+	for _, s := range stones {
+		d[s] += 1
+	}
 
-	for i := range 75 {
-
-		for j := 0; j < len(stones); j++ {
-			t := strconv.Itoa(stones[j])
-			if stones[j] == 0 {
-				stones[j] = 1
+	for range 75 {
+		d2 := make(map[int]int)
+		for j := range d {
+			t := strconv.Itoa(j)
+			if j == 0 {
+				d2[1] += d[j]
 			} else if len(t)%2 == 0 {
 				b, err := strconv.Atoi(t[:len(t)/2])
 				check(err)
 				c, err := strconv.Atoi(t[len(t)/2:])
 				check(err)
-				stones[j] = c
-				stones = slices.Insert(stones, j, b)
-				j++
+				d2[c] += d[j]
+				d2[b] += d[j]
 			} else {
-				stones[j] *= 2024
+				d2[j*2024] += d[j]
 			}
 		}
-
+		d = d2
+		//fmt.Println(i+1, d)
 		//fmt.Println(i+1, stones)
-		fmt.Println(i, len(stones))
+		//fmt.Println(i, len(stones))
+
 	}
-	return len(stones)
+	total := 0
+	for _, v := range d {
+		total += v
+	}
+
+	return total
 }
 
 func main() {
