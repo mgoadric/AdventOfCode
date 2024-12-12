@@ -17,7 +17,7 @@ func check(e error) {
 
 func parsing() []int {
 
-	data, err := os.ReadFile("../../day/10/input.txt")
+	data, err := os.ReadFile("../../day/11/input.txt")
 	check(err)
 
 	s := make([]int, 0)

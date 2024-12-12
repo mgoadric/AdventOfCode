@@ -1,9 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
-	"slices"
 	"time"
 )
 
@@ -13,149 +13,131 @@ func check(e error) {
 	}
 }
 
-type chunk struct {
-	i     int
-	id    int
-	len   int
-	space int
-}
-
-func parsing() ([]chunk, []int) {
-
-	data, err := os.ReadFile("../../day/9/input.txt")
+func parsing() ([][]byte, point) {
+	dat, err := os.ReadFile("../../day/10/input.txt")
 	check(err)
-	//fmt.Print(string(data))
 
-	d := make([]chunk, 0)
-	s := make([]int, 0)
+	grid := bytes.Split(dat, []byte("\n"))
+	grid = grid[:len(grid)-1]
 
-	data = data[:len(data)-1]
+	guard := point{x: -1, y: -1}
 
-	loc := 0
-	for i := 0; i < len(data); i++ {
-		v := int(data[i]) - 48
-		//fmt.Print(v)
-		if i%2 == 0 {
-			d = append(d, chunk{i: loc, id: i / 2, len: v})
-		} else {
-			s = append(s, v)
-		}
-		loc += v
-	}
-
-	return d, s
-}
-
-func parsing2() []chunk {
-
-	data, err := os.ReadFile("../../day/9/input.txt")
-	check(err)
-	//fmt.Print(string(data))
-
-	d := make([]chunk, 0)
-
-	data = data[:len(data)-1]
-
-	loc := 0
-	for i := 0; i < len(data); i++ {
-		//fmt.Println(i, int(data[i])-48)
-		v := int(data[i]) - 48
-		if i%2 == 0 {
-			sp := 0
-			if i+1 < len(data) {
-				sp = int(data[i+1]) - 48
+	for i := range len(grid) {
+		//fmt.Println(grid[i])
+		found := false
+		for j := range len(grid[i]) {
+			if grid[i][j] == '^' {
+				guard.x = i
+				guard.y = j
+				found = true
+				break
 			}
-			d = append(d, chunk{i: loc, id: i / 2, len: v, space: sp})
 		}
-		loc += v
+		if found {
+			break
+		}
 	}
-
-	return d
+	return grid, guard
 }
 
-func calc(d chunk) int {
-	t := 0
-	for i := range d.len {
-		t += d.id * (d.i + i)
-		//fmt.Println(d.id, d.i+i, d.id*(d.i+i))
+func gridPrint(grid [][]byte) {
+	for i := range len(grid) {
+		fmt.Println(string(grid[i]))
 	}
-	return t
 }
 
-func part1() int {
-	data, spaces := parsing()
+type point struct {
+	x int
+	y int
+}
 
-	total := 0
+var dirs = map[rune]point{
+	'^': {x: -1, y: 0},
+	'>': {x: 0, y: 1},
+	'v': {x: 1, y: 0},
+	'<': {x: 0, y: -1},
+}
+var dnext = []rune{
+	'^', '>', 'v', '<',
+}
+
+func patrol(grid [][]byte, guard point) int {
+	height := len(grid)
+	width := len(grid[0])
+
+	d := 0
+	total := 1
+
 	for {
-		//fmt.Println(data, spaces)
-
-		// Process data chunk
-		if len(data) == 0 {
-			break
-		}
-		d := data[0]
-		total += calc(d)
-		data = data[1:]
-
-		if len(data) == 0 {
-			break
-		}
-
-		// Fill in spaces
-		e := &data[len(data)-1]
-		//fmt.Println("d:", d)
-		//fmt.Println("e:", e)
-		used := 0
+		// Bumping into objects
 		for {
-			if len(spaces) == 0 {
+			next := point{x: guard.x + dirs[dnext[d]].x, y: guard.y + dirs[dnext[d]].y}
+			if next.x >= height || next.y >= width || next.x < 0 || next.y < 0 {
+				guard = next
 				break
 			}
-			if spaces[0] < e.len {
-				e.len -= spaces[0]
-				t := chunk{i: d.i + d.len + used, id: e.id, len: spaces[0]}
-				total += calc(t)
-				break
+			if grid[next.x][next.y] == '#' {
+				d++
+				d %= len(dirs)
 			} else {
-				spaces[0] -= e.len
-				e.i = d.i + d.len + used
-				total += calc(*e)
-				used += e.len
-				data = data[:len(data)-1]
-				e = &data[len(data)-1]
+				guard = next
+				break
 			}
 		}
-		spaces = spaces[1:]
 
+		// Out of bounds? Stop!
+		if guard.x >= height || guard.y >= width || guard.x < 0 || guard.y < 0 {
+			break
+		}
+
+		// Is this somewhere new?
+		_, ok := dirs[rune(grid[guard.x][guard.y])]
+		if !ok {
+			grid[guard.x][guard.y] = byte(dnext[d])
+			total++
+		} else {
+			if rune(grid[guard.x][guard.y]) == dnext[d] {
+				total = -1
+				break
+			}
+		}
 	}
 	return total
 }
 
-func part2() int {
-	data := parsing2()
+func part1() int {
 
-	//fmt.Println("a b", data)
-	for i := len(data) - 1; i >= 1; i-- {
-		e := &data[i]
-		for j := 0; j < i; j++ {
-			d := &data[j]
-			if d.space >= e.len {
-				e.space = d.space - e.len
-				d.space = 0
-				e.i = d.i + d.len
-				// Move E
-				data = slices.Insert(data, j+1, *e)
-				data = slices.Delete(data, i+1, i+2)
-				//fmt.Println(i, j, data)
-				i++
-				break
+	grid, guard := parsing()
+	return patrol(grid, guard)
+}
+
+func part2() int {
+
+	grid, guard := parsing()
+
+	total := 0
+
+	for i := range len(grid) {
+		for j := range len(grid[i]) {
+			mygrid := make([][]byte, len(grid))
+			for a := range len(grid) {
+				row := make([]byte, len(grid[i]))
+				for b := range len(grid[a]) {
+					row[b] = grid[a][b]
+				}
+				mygrid[a] = row
+			}
+			gpos := point{x: guard.x, y: guard.y}
+
+			if gpos.x != i || gpos.y != j {
+				mygrid[i][j] = '#'
+				if patrol(mygrid, gpos) == -1 {
+					total++
+				}
 			}
 		}
 	}
 
-	total := 0
-	for _, c := range data {
-		total += calc(c)
-	}
 	return total
 }
 
