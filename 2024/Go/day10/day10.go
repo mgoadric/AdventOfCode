@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"slices"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -15,88 +13,149 @@ func check(e error) {
 	}
 }
 
-func parsing() []int {
+type chunk struct {
+	i     int
+	id    int
+	len   int
+	space int
+}
 
-	data, err := os.ReadFile("../../day/10/input.txt")
+func parsing() ([]chunk, []int) {
+
+	data, err := os.ReadFile("../../day/9/input.txt")
 	check(err)
+	//fmt.Print(string(data))
 
+	d := make([]chunk, 0)
 	s := make([]int, 0)
-	calibration := strings.Fields(string(data))
-	for _, p := range calibration {
-		num, err := strconv.Atoi(p)
-		check(err)
-		s = append(s, num)
+
+	data = data[:len(data)-1]
+
+	loc := 0
+	for i := 0; i < len(data); i++ {
+		v := int(data[i]) - 48
+		//fmt.Print(v)
+		if i%2 == 0 {
+			d = append(d, chunk{i: loc, id: i / 2, len: v})
+		} else {
+			s = append(s, v)
+		}
+		loc += v
 	}
 
-	return s
+	return d, s
+}
+
+func parsing2() []chunk {
+
+	data, err := os.ReadFile("../../day/9/input.txt")
+	check(err)
+	//fmt.Print(string(data))
+
+	d := make([]chunk, 0)
+
+	data = data[:len(data)-1]
+
+	loc := 0
+	for i := 0; i < len(data); i++ {
+		//fmt.Println(i, int(data[i])-48)
+		v := int(data[i]) - 48
+		if i%2 == 0 {
+			sp := 0
+			if i+1 < len(data) {
+				sp = int(data[i+1]) - 48
+			}
+			d = append(d, chunk{i: loc, id: i / 2, len: v, space: sp})
+		}
+		loc += v
+	}
+
+	return d
+}
+
+func calc(d chunk) int {
+	t := 0
+	for i := range d.len {
+		t += d.id * (d.i + i)
+		//fmt.Println(d.id, d.i+i, d.id*(d.i+i))
+	}
+	return t
 }
 
 func part1() int {
-	stones := parsing()
-	//fmt.Println(0, stones)
+	data, spaces := parsing()
 
-	for range 25 {
+	total := 0
+	for {
+		//fmt.Println(data, spaces)
 
-		for j := 0; j < len(stones); j++ {
-			t := strconv.Itoa(stones[j])
-			if stones[j] == 0 {
-				stones[j] = 1
-			} else if len(t)%2 == 0 {
-				b, err := strconv.Atoi(t[:len(t)/2])
-				check(err)
-				c, err := strconv.Atoi(t[len(t)/2:])
-				check(err)
-				stones[j] = c
-				stones = slices.Insert(stones, j, b)
-				j++
-			} else {
-				stones[j] *= 2024
-			}
+		// Process data chunk
+		if len(data) == 0 {
+			break
+		}
+		d := data[0]
+		total += calc(d)
+		data = data[1:]
+
+		if len(data) == 0 {
+			break
 		}
 
-		//fmt.Println(i+1, stones)
+		// Fill in spaces
+		e := &data[len(data)-1]
+		//fmt.Println("d:", d)
+		//fmt.Println("e:", e)
+		used := 0
+		for {
+			if len(spaces) == 0 {
+				break
+			}
+			if spaces[0] < e.len {
+				e.len -= spaces[0]
+				t := chunk{i: d.i + d.len + used, id: e.id, len: spaces[0]}
+				total += calc(t)
+				break
+			} else {
+				spaces[0] -= e.len
+				e.i = d.i + d.len + used
+				total += calc(*e)
+				used += e.len
+				data = data[:len(data)-1]
+				e = &data[len(data)-1]
+			}
+		}
+		spaces = spaces[1:]
+
 	}
-	return len(stones)
+	return total
 }
 
 func part2() int {
-	stones := parsing()
-	//fmt.Println(0, stones)
+	data := parsing2()
 
-	// put in dictionary??
-	d := make(map[int]int)
-	for _, s := range stones {
-		d[s] += 1
-	}
-
-	for range 75 {
-		d2 := make(map[int]int)
-		for j := range d {
-			t := strconv.Itoa(j)
-			if j == 0 {
-				d2[1] += d[j]
-			} else if len(t)%2 == 0 {
-				b, err := strconv.Atoi(t[:len(t)/2])
-				check(err)
-				c, err := strconv.Atoi(t[len(t)/2:])
-				check(err)
-				d2[c] += d[j]
-				d2[b] += d[j]
-			} else {
-				d2[j*2024] += d[j]
+	//fmt.Println("a b", data)
+	for i := len(data) - 1; i >= 1; i-- {
+		e := &data[i]
+		for j := 0; j < i; j++ {
+			d := &data[j]
+			if d.space >= e.len {
+				e.space = d.space - e.len
+				d.space = 0
+				e.i = d.i + d.len
+				// Move E
+				data = slices.Insert(data, j+1, *e)
+				data = slices.Delete(data, i+1, i+2)
+				//fmt.Println(i, j, data)
+				i++
+				break
 			}
 		}
-		d = d2
-		//fmt.Println(i+1, d)
-		//fmt.Println(i+1, stones)
-		//fmt.Println(i, len(stones))
-
 	}
+
 	total := 0
-	for _, v := range d {
-		total += v
+	for _, c := range data {
+		total += calc(c)
 	}
-
 	return total
 }
 
