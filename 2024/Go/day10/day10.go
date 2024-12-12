@@ -13,42 +13,41 @@ func check(e error) {
 	}
 }
 
-func parsing() ([][]byte, point) {
+func parsing() [][]int {
 	dat, err := os.ReadFile("../../day/10/input.txt")
 	check(err)
 
 	grid := bytes.Split(dat, []byte("\n"))
 	grid = grid[:len(grid)-1]
 
-	guard := point{x: -1, y: -1}
-
+	a := make([][]int, len(grid))
 	for i := range len(grid) {
-		//fmt.Println(grid[i])
-		found := false
+		b := make([]int, len(grid[i]))
+		a[i] = b
 		for j := range len(grid[i]) {
-			if grid[i][j] == '^' {
-				guard.x = i
-				guard.y = j
-				found = true
-				break
-			}
-		}
-		if found {
-			break
+			a[i][j] = int(grid[i][j]) - 48
 		}
 	}
-	return grid, guard
+	return a
 }
 
-func gridPrint(grid [][]byte) {
+func gridPrint(grid [][]int) {
 	for i := range len(grid) {
-		fmt.Println(string(grid[i]))
+		for j := range len(grid[i]) {
+			fmt.Print(grid[i][j])
+		}
+		fmt.Println()
 	}
 }
 
 type point struct {
-	x int
-	y int
+	x     int
+	y     int
+	level int
+}
+
+func (p point) add(p2 point) point {
+	return point{x: p.x + p2.x, y: p.y + p2.y}
 }
 
 var dirs = map[rune]point{
@@ -61,79 +60,85 @@ var dnext = []rune{
 	'^', '>', 'v', '<',
 }
 
-func patrol(grid [][]byte, guard point) int {
+func walk(grid [][]int, p point, record bool) int {
+
 	height := len(grid)
 	width := len(grid[0])
+	total := 0
+	q := make([]point, 1)
+	q[0] = p
 
-	d := 0
-	total := 1
+	v := make(map[point]bool)
 
 	for {
-		// Bumping into objects
-		for {
-			next := point{x: guard.x + dirs[dnext[d]].x, y: guard.y + dirs[dnext[d]].y}
-			if next.x >= height || next.y >= width || next.x < 0 || next.y < 0 {
-				guard = next
-				break
-			}
-			if grid[next.x][next.y] == '#' {
-				d++
-				d %= len(dirs)
-			} else {
-				guard = next
-				break
-			}
-		}
-
-		// Out of bounds? Stop!
-		if guard.x >= height || guard.y >= width || guard.x < 0 || guard.y < 0 {
+		if len(q) == 0 {
 			break
 		}
+		t := q[0]
+		q = q[1:]
 
-		// Is this somewhere new?
-		_, ok := dirs[rune(grid[guard.x][guard.y])]
-		if !ok {
-			grid[guard.x][guard.y] = byte(dnext[d])
-			total++
-		} else {
-			if rune(grid[guard.x][guard.y]) == dnext[d] {
-				total = -1
-				break
+		// Already seen
+		if v[t] {
+			continue
+		}
+		if record {
+			v[t] = true
+		}
+
+		if grid[t.x][t.y] == 9 {
+			total += 1
+			continue
+		}
+
+		for _, d := range dnext {
+			t2 := t.add(dirs[d])
+
+			// Out of bounds?
+			if t2.x >= height || t2.y >= width || t2.x < 0 || t2.y < 0 {
+				continue
+			}
+			if grid[t2.x][t2.y]-1 == t.level {
+				t2.level = t.level + 1
+				//fmt.Println(string(d), t2)
+				q = append(q, t2)
 			}
 		}
 	}
+
 	return total
 }
 
 func part1() int {
 
-	grid, guard := parsing()
-	return patrol(grid, guard)
+	grid := parsing()
+	//gridPrint(grid)
+
+	total := 0
+	for i := range len(grid) {
+		for j := range len(grid[i]) {
+			if grid[i][j] == 0 {
+				t := point{x: i, y: j}
+				//fmt.Println(t)
+				total += walk(grid, t, true)
+			}
+		}
+	}
+
+	return total
 }
 
 func part2() int {
 
-	grid, guard := parsing()
+	grid := parsing()
+	//gridPrint(grid)
 
 	total := 0
-
 	for i := range len(grid) {
 		for j := range len(grid[i]) {
-			mygrid := make([][]byte, len(grid))
-			for a := range len(grid) {
-				row := make([]byte, len(grid[i]))
-				for b := range len(grid[a]) {
-					row[b] = grid[a][b]
-				}
-				mygrid[a] = row
-			}
-			gpos := point{x: guard.x, y: guard.y}
-
-			if gpos.x != i || gpos.y != j {
-				mygrid[i][j] = '#'
-				if patrol(mygrid, gpos) == -1 {
-					total++
-				}
+			if grid[i][j] == 0 {
+				t := point{x: i, y: j}
+				//fmt.Println(t)
+				total += walk(grid, t, false)
 			}
 		}
 	}
