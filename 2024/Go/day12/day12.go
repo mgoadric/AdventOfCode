@@ -14,7 +14,7 @@ func check(e error) {
 }
 
 func parsing() [][]byte {
-	dat, err := os.ReadFile("../../day/12/test.txt")
+	dat, err := os.ReadFile("../../day/12/input.txt")
 	check(err)
 
 	grid := bytes.Split(dat, []byte("\n"))
@@ -38,6 +38,10 @@ func (p point) add(p2 point) point {
 	return point{x: p.x + p2.x, y: p.y + p2.y}
 }
 
+func (p point) mult(m int) point {
+	return point{x: p.x * m, y: p.y * m}
+}
+
 func (p point) inRange(bounds point) bool {
 	return p.x >= 0 && p.y >= 0 && p.x < bounds.x && p.y < bounds.y
 }
@@ -55,7 +59,18 @@ func (b blob) area() int {
 }
 
 func (b blob) perimeter() int {
-	return 3
+	p := make(map[point]bool)
+	for _, bp := range b.points {
+		for _, d := range dnext {
+			pp := bp.mult(2).add(dirs[d])
+			if p[pp] {
+				delete(p, pp)
+			} else {
+				p[pp] = true
+			}
+		}
+	}
+	return len(p)
 }
 
 var dirs = map[rune]point{
@@ -73,7 +88,7 @@ func findBlob(grid [][]byte, bounds point, p point, v map[point]bool) blob {
 	q := make([]point, 1)
 	q[0] = p
 
-	ps := []point{} // why not ps := make([]point, 0) ?????
+	ps := make([]point, 0)
 	b := blob{points: ps}
 
 	for {
@@ -116,7 +131,7 @@ func part1() int {
 
 	bounds := point{x: len(grid), y: len(grid[0])}
 
-	gridPrint(grid)
+	//gridPrint(grid)
 
 	v := make(map[point]bool)
 
@@ -126,7 +141,7 @@ func part1() int {
 			p := point{x: i, y: j}
 			if !v[p] {
 				b := findBlob(grid, bounds, p, v)
-				fmt.Println(b)
+				//fmt.Println(b, b.area(), b.perimeter())
 				total += b.area() * b.perimeter()
 			}
 		}
