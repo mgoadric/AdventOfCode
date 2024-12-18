@@ -47,7 +47,9 @@ func (p point) inRange(bounds point) bool {
 }
 
 type blob struct {
-	points []point
+	points  []point
+	fences  map[point]bool
+	corners map[point]int
 }
 
 func (b *blob) add(p point) {
@@ -59,10 +61,73 @@ func (b blob) area() int {
 }
 
 func (b blob) perimeter() int {
+	nudge := point{x: 1, y: 1}
+	f := make(map[point]bool)
+	for _, bp := range b.points {
+		for _, d := range dirNext {
+			pp := bp.mult(2).add(dirs[d]).add(nudge)
+			if f[pp] {
+				delete(f, pp)
+			} else {
+				f[pp] = true
+			}
+		}
+	}
+	return len(f)
+}
+
+func (b blob) bulk() int {
+	nudge := point{x: 1, y: 1}
+	f := make(map[point]bool)
+	c := make(map[point]int)
+
+	for _, bp := range b.points {
+		for i, d := range dirNext {
+			fp := bp.mult(2).add(dirs[d]).add(nudge)
+			if f[fp] {
+				delete(f, fp)
+			} else {
+				f[fp] = true
+			}
+			cp := bp.mult(2).add(dirs[dirNext[i]]).add(dirs[dirNext[(i+1)%len(dirNext)]]).add(nudge)
+			if c[cp] == 3 {
+				delete(c, cp)
+			} else {
+				c[cp]++
+			}
+		}
+	}
+
+	path := make(map[point]map[rune]point)
+	edges := 0
+	for cp := range c {
+		path[cp] = make(map[rune]point)
+		for _, d := range dirNext {
+			if f[cp.add(dirs[d])] {
+				path[cp][d] = cp.add(dirs[d].mult(2))
+			}
+		}
+		if len(path[cp]) == 4 {
+			edges += 2
+		} else {
+			for d := range path[cp] {
+				_, ok := path[cp][dirOpp[d]]
+				if !ok {
+					edges += 1
+					break
+				}
+			}
+		}
+	}
+	return edges
+}
+
+// //// DEBUG PRINTING
+func (b blob) perimeterP() map[point]bool {
 	p := make(map[point]bool)
 	for _, bp := range b.points {
-		for _, d := range dnext {
-			pp := bp.mult(2).add(dirs[d])
+		for _, d := range dirNext {
+			pp := bp.mult(2).add(dirs[d]).add(point{x: 1, y: 1})
 			if p[pp] {
 				delete(p, pp)
 			} else {
@@ -70,8 +135,46 @@ func (b blob) perimeter() int {
 			}
 		}
 	}
-	return len(p)
+	return p
 }
+
+func (b blob) bulkP() map[point]int {
+	p := make(map[point]int)
+	for _, bp := range b.points {
+		for i := range dirNext {
+			pp := bp.mult(2).add(dirs[dirNext[i]]).add(dirs[dirNext[(i+1)%len(dirNext)]]).add(point{x: 1, y: 1})
+			if p[pp] == 3 {
+				delete(p, pp)
+			} else {
+				p[pp]++
+			}
+		}
+	}
+	return p
+}
+
+func blobPrint(fences map[point]bool, corners map[point]int, bound point) {
+	for i := range bound.x*2 + 1 {
+		for j := range bound.y*2 + 1 {
+			p := point{x: i, y: j}
+			c, ok := corners[p]
+			if fences[p] && ok {
+				panic(1)
+			}
+
+			if fences[p] {
+				fmt.Print("#")
+			} else if ok {
+				fmt.Print(c)
+			} else {
+				fmt.Print(" ")
+			}
+		}
+		fmt.Println()
+	}
+}
+
+////// END OF DEBUG SECTION
 
 var dirs = map[rune]point{
 	'^': {x: -1, y: 0},
@@ -79,8 +182,15 @@ var dirs = map[rune]point{
 	'v': {x: 1, y: 0},
 	'<': {x: 0, y: -1},
 }
-var dnext = []rune{
+var dirNext = []rune{
 	'^', '>', 'v', '<',
+}
+
+var dirOpp = map[rune]rune{
+	'^': 'v',
+	'>': '<',
+	'v': '^',
+	'<': '>',
 }
 
 func findBlob(grid [][]byte, bounds point, p point, v map[point]bool) blob {
@@ -88,8 +198,7 @@ func findBlob(grid [][]byte, bounds point, p point, v map[point]bool) blob {
 	q := make([]point, 1)
 	q[0] = p
 
-	ps := make([]point, 0)
-	b := blob{points: ps}
+	b := blob{}
 
 	for {
 		if len(q) == 0 {
@@ -106,7 +215,7 @@ func findBlob(grid [][]byte, bounds point, p point, v map[point]bool) blob {
 		b.add(t)
 		v[t] = true
 
-		for _, d := range dnext {
+		for _, d := range dirNext {
 			t2 := t.add(dirs[d])
 
 			// Out of bounds?
@@ -154,7 +263,26 @@ func part2() int {
 
 	grid := parsing()
 
-	return len(grid)
+	bounds := point{x: len(grid), y: len(grid[0])}
+
+	//gridPrint(grid)
+
+	v := make(map[point]bool)
+
+	total := 0
+	for i := range bounds.x {
+		for j := range bounds.y {
+			p := point{x: i, y: j}
+			if !v[p] {
+				b := findBlob(grid, bounds, p, v)
+				//blobPrint(b.perimeterP(), b.bulkP(), bounds)
+				//fmt.Println(b.area(), b.perimeter(), b.bulk())
+				total += b.area() * b.bulk()
+			}
+		}
+	}
+	return total
+
 }
 
 func main() {
