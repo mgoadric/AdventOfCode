@@ -15,7 +15,7 @@ func check(e error) {
 }
 
 func parsing() []map[rune]point {
-	dat, err := os.ReadFile("../../day/13/test.txt")
+	dat, err := os.ReadFile("../../day/13/input.txt")
 	check(err)
 
 	m := make([]map[rune]point, 0)
@@ -56,16 +56,72 @@ type point struct {
 	y int
 }
 
+func (p point) eq(p2 point) bool {
+	return p.x == p2.x && p.y == p2.y
+}
+
+func (p point) add(p2 point) point {
+	return point{x: p.x + p2.x, y: p.y + p2.y}
+}
+
+func (p point) mult(m int) point {
+	return point{x: p.x * m, y: p.y * m}
+}
+
+func mash(m map[rune]point) int {
+	s := 401
+	for i := range 100 {
+		for j := range 100 {
+			if m['A'].mult(i).add(m['B'].mult(j)).eq(m['P']) {
+				c := 3*i + j
+				if c < s {
+					s = c
+				}
+			}
+		}
+	}
+	if s == 401 {
+		s = 0
+	}
+	return s
+}
+
+func mash2(m map[rune]point) int {
+	s := 401
+	for i := range 100 {
+		for j := range 100 {
+			if m['A'].mult(i).add(m['B'].mult(j)).eq(m['P']) {
+				c := 3*i + j
+				if c < s {
+					s = c
+				}
+			}
+		}
+	}
+	if s == 401 {
+		s = 0
+	}
+	return s
+}
+
 func part1() int {
 	data := parsing()
-	fmt.Println(data)
-	return len(data)
+
+	total := 0
+	for _, m := range data {
+		total += mash(m)
+	}
+	return total
 }
 
 func part2() int {
 	data := parsing()
 
-	return len(data)
+	total := 0
+	for _, m := range data {
+		total += mash2(m)
+	}
+	return total
 }
 
 func main() {
